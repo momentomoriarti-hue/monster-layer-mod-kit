@@ -32,6 +32,23 @@ Nothing has to be installed on your PC: the scripts use only tools built into Wi
 
 All config fields (sizes, traits, chance, portrait, other animations, sounds) are described in the example configs and in [Custom Lays](#custom-lays), [Custom Bosses](#custom-bosses) and [Mod settings](#mod-settings).
 
+## 💬 Contact and help
+
+Stuck on something, found a bug, or need a new feature for your mod? **Write me — talking to you while you make a mod matters a lot, and I check every day:**
+
+- email: **momento.moriarti@gmail.com**
+- the Monster Layer thread on F95zone, where the kit is posted;
+- a private message on F95zone.
+
+I can explain how a feature works, fix bugs and add features to the kit.
+
+## Roadmap
+
+The kit will keep growing **only if people want to make mods with it**.
+
+- **Planned:** custom opponents, bosses **and protagonists** rendered just like the default ones, so modders can draw separate body parts and other pieces instead of using videos.
+- **Possible:** changing perks and mechanics and adding new ones, if that turns out to be possible within the [security limits](#security-limits).
+
 ## Folder structure
 
 ```
