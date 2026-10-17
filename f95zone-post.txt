@@ -1,89 +1,32 @@
 [CENTER][SIZE=6][B]Monster Layer Mod Kit[/B][/SIZE]
-[SIZE=4]Make your own opponents and bosses for Monster Layer — from videos, GIFs and pictures, no coding needed[/SIZE][/CENTER]
+[SIZE=4]Make your own opponents and bosses for Monster Layer from videos, GIFs and pictures — no coding needed[/SIZE][/CENTER]
 
-[B]Published with the developer's permission.[/B] The kit contains [B]no game files[/B]: you use your own copy of Monster Layer, and the kit never downloads the game.
+[B]Published with the developer's permission.[/B] The kit has no game files: it works with your own copy of the game.
 
-[CENTER][SIZE=5][B]Links[/B][/SIZE]
-[B]🛠 Want to MAKE mods?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit'][B]Monster Layer Mod Kit[/B] (GitHub)[/URL]
-[B]🎮 Just want to TRY a mod safely?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools'][B]Player Tools[/B] (GitHub, with a step-by-step guide)[/URL]
-[B]🎬 Example mod:[/B] [URL='https://mega.nz/file/X7g2SZjL#y1ingcZMsWqURSwf_TGiwZZvaPaAp-wkq7jt6O9-JmQ']video[/URL] · [URL='https://mega.nz/file/WnAiDRCY#lxsKSYpPPx-QoHapzzUcXmqmGGgahHnXxEOKl-3cdUY']source mod (Femboy A)[/URL][/CENTER]
+I made this kit mostly because [B]I want to play what you will create[/B]. So grab it, make some Lays and bosses, and share them here!
 
-[SIZE=5][B]What it is[/B][/SIZE]
-A free, open-source set of Windows scripts that unpacks your copy of Monster Layer (Godot 4.3), adds new content to it and packs it back. My goal is simple: [B]I want people to download the kit and make content[/B] — new Lays, new bosses, new animations — and share it here.
-
-[B]What you can make[/B]
+[SIZE=5][B]What it can do[/B][/SIZE]
 [LIST]
-[*][B]Custom Lays[/B] (opponents): one folder per Lay with a [ICODE]lay.cfg[/ICODE] and your media. Body (chest, genitals, sizes), up to 3 fixed traits, spawn chance (100 = as likely as one normal species), portrait, voice and sound muting.
-[*][B]Custom Bosses[/B] that replace the dragon, with their own intro animation.
-[*][B]Animations from your own videos, GIFs or pictures[/B] for thrust, pound, idle, free cum, egg, lose, orgasm and hypno. Several files per animation (picked at random), speed modifiers, auto-fit to the game's timings, Pleasure speed-up steps, FPS cap. Videos are converted automatically with FFmpeg.
-[*][B]Mod settings[/B] for the whole mod: turn off the Pleasure speed-up, hide the normal Lays or the dragon, and more.
-[*]Or edit the game itself in the Godot 4.3 editor — the kit gives you a ready project.
+[*][B]Custom Lays[/B] (opponents) and [B]custom bosses[/B] that replace the dragon.
+[*][B]Your own videos, GIFs or pictures[/B] for every animation: thrust, pound, idle, free cum, egg, lose, orgasm, hypno and the boss intro. Converted and fitted to the game's timings automatically.
+[*]Body, sizes, traits, spawn chance, name and portrait for each Lay; muting the game's own sounds.
+[*]Mod-wide settings, like turning off the Pleasure speed-up or hiding the normal Lays or the dragon.
+[*]One-click build, and one-click packing of your mod as a [B]source zip[/B] to share.
 [/LIST]
-Every config field is documented right in the example configs. The full guide is in the README (English and Russian).
+Everything else — how to start, every config field, the details — is in the README on GitHub.
 
-[SIZE=5][B]How to start[/B][/SIZE]
-[LIST=1]
-[*]Download the kit: [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']GitHub[/URL] (Code → Download ZIP).
-[*]Copy [ICODE]Monster Layer.exe[/ICODE] and [ICODE]Monster Layer.pck[/ICODE] from your game into [ICODE]Original Packed[/ICODE].
-[*]Run [ICODE]Scripts\setup-tools.bat[/ICODE] once (it downloads GDRE Tools, Godot 4.3 and FFmpeg from their official releases), then [ICODE]unpack-original.bat[/ICODE] and [ICODE]copy-unpacked.bat[/ICODE].
-[*]Make a folder in [ICODE]Custom Lays[/ICODE], drop in your video and write a short [ICODE]lay.cfg[/ICODE] (a 6-line example is at the top of the README).
-[*]Run [ICODE]pack-moded.bat[/ICODE] and play. Share with [ICODE]pack-moded-source.bat[/ICODE] (see below).
-[/LIST]
-
-[SIZE=5][B]Security — please read[/B][/SIZE]
-A Godot [ICODE].pck[/ICODE] is not "just assets": it holds [B]the whole game's code[/B], and Godot has no sandbox. A modded [ICODE].pck[/ICODE] can do anything a program can do. So I built the kit so that sharing and playing mods can be done without having to trust the mod author.
-
-[B]Principles of the kit[/B]
-[LIST]
-[*][B]Mods are shared as data, not code.[/B] [ICODE]pack-moded-source.bat[/ICODE] makes a [B]source zip[/B] that contains [B]only[/B] the configs (plain text) and the original videos, GIFs and pictures. No scripts, no programs, no game files. You can open every file, scan the zip with your antivirus or an online scanner (e.g. VirusTotal), or ask an AI agent to read it.
-[*][B]All code is in one public, readable place[/B] — the Player Tools folder of the kit. Players build the mod themselves with it, so a mod author can't slip code into the build.
-[*][B]Only official tools.[/B] Godot 4.3, GDRE Tools and FFmpeg are downloaded only from their official GitHub releases, only after asking, and each download is checked against a pinned SHA-256; a mismatch is deleted.
-[*][B]The game is never downloaded and no [ICODE].exe[/ICODE] is ever shared.[/B] You always run your own, official [ICODE]Monster Layer.exe[/ICODE]. A Monster Layer mod never needs an [ICODE].exe[/ICODE].
-[*][B]The kit's own game code doesn't use the network, doesn't run programs and doesn't touch files outside the game[/B], and is written so the checker below can verify that.
-[/LIST]
-
-[B]Player Tools[/B] (a separate folder with its own README, for players who just want to play mods):
-[LIST]
-[*][ICODE]build-mod.bat[/ICODE] — builds the mod's [ICODE].pck[/ICODE] from its source zip with the official Godot 4.3 and [B]your own game[/B]. It refuses the whole zip if it contains anything but configs, videos and pictures (scripts, scenes, [ICODE]@tool[/ICODE] scripts and editor plugins that Godot would run during the build, programs, archives, paths leaving the folder).
-[*][ICODE]check-mod.bat[/ICODE] — checks a ready [ICODE].pck[/ICODE] [B]without running it[/B]: unpacks it, compares every script with your original game and flags program launching, network, loading code at run time, writing or deleting files outside the game, hidden programs and more. Verdict: LOOKS SAFE / WARNING / DANGER.
-[*][ICODE]play-in-sandbox.bat[/ICODE] — plays a mod inside [B]Windows Sandbox[/B] (Windows 10/11 Pro): no internet, your game and the mod read-only, separate saves, everything wiped when you close it. Costs some FPS.
-[/LIST]
-
-[B]The safe path for players[/B]
-[LIST=1]
-[*]Get the mod as a [B]source zip[/B].
-[*]Look inside and scan it with your antivirus.
-[*]Build it yourself with [ICODE]build-mod.bat[/ICODE].
-[*]Run it with your own, official [ICODE]Monster Layer.exe[/ICODE].
-[/LIST]
-[B]If you trust me and follow the instructions in the Player Tools folder, then most likely everything will be fine.[/B] "Most likely" because no checker can prove that something is 100% safe: the remaining risk is a media file crafted to attack a bug in FFmpeg or Godot itself, which your antivirus and Windows Sandbox cover. You don't have to trust me either: everything is plain-text scripts on GitHub — read them, or ask an AI agent to audit them (the repo has an [ICODE]AGENTS.md[/ICODE] made exactly for that).
-
-[B]Staying careful with other people's mods[/B]
-[LIST]
-[*]Download mods only from the author's own thread or page, not from re-uploads.
-[*][B]Never run an [ICODE].exe[/ICODE], [ICODE].bat[/ICODE], [ICODE].dll[/ICODE], [ICODE].ps1[/ICODE] or installer that comes with a mod.[/B] A mod is a [ICODE].pck[/ICODE] or a source zip, nothing else. Take the Player Tools only from the kit's GitHub page.
-[*]Prefer source zips. If a mod exists only as a [ICODE].pck[/ICODE], check it with [ICODE]check-mod.bat[/ICODE] and play it in Windows Sandbox first. A mod that "needs" a [ICODE].pck[/ICODE] has hand-edited game code: be extra careful.
-[*]Never ignore DANGER or REFUSED. WARNING means "read the report first".
-[*]Back up your original [ICODE]Monster Layer.pck[/ICODE] and your saves ([ICODE]%APPDATA%\Godot\app_userdata\MonsterLayer[/ICODE]).
-[/LIST]
-
-[B]For mod authors[/B]
-[LIST]
-[*]Share the [B]source zip[/B] ([ICODE]pack-moded-source.bat[/ICODE]), and if you like the [ICODE].pck[/ICODE] from [ICODE]Moded Packed\Release[/ICODE] with its SHA-256. [B]Never upload the game's [ICODE].exe[/ICODE][/B] — it's copyrighted and players already have it.
-[*][B]For now, for security, a mod can contain only configs plus pictures, GIFs and videos.[/B] Your own scripts, scenes, plugins or libraries can't be part of a source zip: everything a mod does has to be config fields and media that the kit's code reads.
-[*]If development continues, we will try to find ways to add more features to the mod kit, one by one, without losing the trust of players. Missing a feature? Ask here — it can become a new config field for everyone.
-[/LIST]
+[SIZE=5][B]⚠ Be careful with other people's mods[/B][/SIZE]
+A Monster Layer mod ([ICODE].pck[/ICODE]) holds the whole game's code and can do anything a program can. [B]Before you play a mod made by someone else, read the guide in Player Tools:[/B]
+[CENTER][SIZE=4][URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools'][B]➜ Player Tools: how to check and play other people's mods safely[/B][/URL][/SIZE][/CENTER]
+In short: prefer mods shared as a source zip (only configs, videos and pictures) and build them yourself with the Player Tools; check a ready [ICODE].pck[/ICODE] before playing; use Windows Sandbox if you can; [B]never run an [ICODE].exe[/ICODE] or [ICODE].bat[/ICODE] that comes with a mod[/B].
+For now, for security, mods made with the kit can contain only configs, pictures, GIFs and videos. If development continues, I'll try to add more features without losing players' trust.
 
 [SIZE=5][B]Example mod: Femboy A[/B][/SIZE]
-A small mod made with the kit: one custom Lay with its own thrust, idle and orgasm animations and portrait.
-[LIST]
-[*][B]Video:[/B] [URL='https://mega.nz/file/X7g2SZjL#y1ingcZMsWqURSwf_TGiwZZvaPaAp-wkq7jt6O9-JmQ']see it in the game (MEGA)[/URL]
-[*][B]Source mod:[/B] [URL='https://mega.nz/file/WnAiDRCY#lxsKSYpPPx-QoHapzzUcXmqmGGgahHnXxEOKl-3cdUY']Femboy A, source zip (MEGA)[/URL] — only configs, videos and pictures. Look inside, scan it, then drag it onto [ICODE]build-mod.bat[/ICODE] from the Player Tools to build the [ICODE].pck[/ICODE] yourself.
-[/LIST]
+[URL='https://mega.nz/file/X7g2SZjL#y1ingcZMsWqURSwf_TGiwZZvaPaAp-wkq7jt6O9-JmQ']Video (MEGA)[/URL] · [URL='https://mega.nz/file/WnAiDRCY#lxsKSYpPPx-QoHapzzUcXmqmGGgahHnXxEOKl-3cdUY']Source mod (MEGA)[/URL] — build it with the Player Tools.
 
 [SIZE=5][B]Download[/B][/SIZE]
 [LIST]
-[*][B]For modders — the whole kit:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']github.com/momentomoriarti-hue/monster-layer-mod-kit[/URL] (Code → Download ZIP).
-[*][B]For players who just want to try a mod — Player Tools:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools']the Player Tools folder and its guide[/URL]. To download: [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/archive/refs/heads/main.zip']this ZIP[/URL], then keep only its [ICODE]Player Tools[/ICODE] folder.
+[*][B]Make mods:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']Monster Layer Mod Kit on GitHub[/URL]
+[*][B]Play other people's mods safely:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools']Player Tools[/URL]
 [/LIST]
 Windows 10/11. Feedback, bug reports and your creations are very welcome!
