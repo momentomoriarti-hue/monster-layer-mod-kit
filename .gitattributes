@@ -1,0 +1,18 @@
+# Normalise line endings in the repository.
+* text=auto
+
+# cmd.exe can misread labels (goto/call) in batch files with LF endings,
+# so they are always checked out with CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ogv binary
+*.mp4 binary
+*.webm binary
+*.gif binary

@@ -1,0 +1,41 @@
+Monster Layer mod: how to install
+=================================
+
+This mod is only a "Monster Layer.pck" file. It works with the game you
+already have: your own "Monster Layer.exe" stays as it is.
+
+1. Open the folder of your game, where "Monster Layer.exe" is.
+2. Back up your own "Monster Layer.pck": copy it somewhere safe or rename
+   it to "Monster Layer.pck.bak". To uninstall the mod, put it back.
+3. Put the mod's "Monster Layer.pck" into that folder, next to your own
+   "Monster Layer.exe".
+4. Start the game with your own "Monster Layer.exe".
+
+Never run an .exe file that came with a mod. A mod doesn't need one, and an
+unknown .exe can do anything on your PC.
+
+Optional: SHA256.txt holds the hash of the .pck. If the mod author published
+the hash, compare them to be sure the file wasn't changed. You can also check
+the .pck with the mod checker from the Monster Layer Mod Kit.
+
+
+Мод для Monster Layer: как установить
+=====================================
+
+Этот мод — только файл "Monster Layer.pck". Он работает с игрой, которая у
+тебя уже есть: твой собственный "Monster Layer.exe" остаётся как есть.
+
+1. Открой папку игры, где лежит "Monster Layer.exe".
+2. Сделай резервную копию своего "Monster Layer.pck": скопируй его в надёжное
+   место или переименуй в "Monster Layer.pck.bak". Чтобы удалить мод, верни
+   его обратно.
+3. Положи "Monster Layer.pck" из мода в эту папку, рядом со своим
+   "Monster Layer.exe".
+4. Запускай игру своим "Monster Layer.exe".
+
+Никогда не запускай .exe, который пришёл вместе с модом. Моду он не нужен, а
+неизвестный .exe может сделать на твоём ПК что угодно.
+
+По желанию: в SHA256.txt записан хеш .pck. Если автор мода опубликовал хеш,
+сравни их, чтобы убедиться, что файл не изменён. Ещё можно проверить .pck
+чекером модов из Monster Layer Mod Kit.
