@@ -4,6 +4,32 @@
 
 Tools for players who want to try a Monster Layer mod made by someone else, safely. They work on Windows 10 and 11.
 
+## ⚡ Quick guide
+
+> What to do with a mod you downloaded. Everything after this section is details: read it later or search the page (Ctrl+F).
+
+**0. Get the tools.** On the Mod Kit's GitHub page press **Code → Download ZIP**, unzip it and keep the `Player Tools` folder (with `build\` inside). Keep a backup of your original `Monster Layer.pck`.
+
+**A. You got a source zip** (`... (source).zip`) — the safest case:
+
+1. **Look inside.** It must hold only `mod_source.json`, `mod_settings.cfg`, `lay.cfg` / `boss.cfg` files and pictures, GIFs or videos. Anything else (`.exe`, `.bat`, `.dll`, `.gd`, `.pck`...) means: don't use this mod.
+2. **Scan the zip** with your antivirus, or upload it to [VirusTotal](https://www.virustotal.com/).
+3. **Build it:** drag the zip onto `build-mod.bat`. The first time, answer **Y** to download the tools and drag your **original** `Monster Layer.pck` into the window. Wait for `[OK] Built` and `VERDICT: LOOKS SAFE`.
+4. Your mod is now `<zip name> - built\Monster Layer.pck`, next to the zip. Go to **C**.
+
+**B. You got a ready `.pck`:**
+
+1. **Never run** anything that came with it (`.exe`, `.bat`, installers): a mod is only the `.pck`.
+2. **Check it:** drag the `.pck` onto `check-mod.bat` (the first time it asks for your original `Monster Layer.pck`).
+   - **LOOKS SAFE** → go to **C**.
+   - **WARNING** → read `<mod name>.check.txt`; if you play it, play it only in Windows Sandbox.
+   - **DANGER** → delete the mod.
+
+**C. Play it:**
+
+- **In Windows Sandbox** (safest; Windows 10/11 Pro, [turn it on](#turning-windows-sandbox-on) once): drag the mod's `.pck` onto `play-in-sandbox.bat`, the first time point it to your game folder. The first start shows a black window for about a minute. Saves stay in `sandbox\saves\`, your real saves aren't touched.
+- **Normally:** back up your `Monster Layer.pck` and your saves (`%APPDATA%\Godot\app_userdata\MonsterLayer`), then copy the mod's `Monster Layer.pck` into your game folder, replacing the original. To remove the mod, put your backup back.
+
 | File | What it does |
 |---|---|
 | `check-mod.bat` | Checks a mod's `.pck` for dangerous code **without running it**. |
@@ -183,6 +209,32 @@ Use exactly these versions. (Inside the Monster Layer Mod Kit the scripts also f
 ## Русский
 
 Инструменты для игроков, которые хотят безопасно попробовать чужой мод для Monster Layer. Работают на Windows 10 и 11.
+
+## ⚡ Краткая инструкция
+
+> Что делать со скачанным модом. Всё после этого раздела — подробности: прочитай потом или ищи по странице (Ctrl+F).
+
+**0. Возьми инструменты.** На странице Mod Kit на GitHub нажми **Code → Download ZIP**, распакуй и оставь папку `Player Tools` (с `build\` внутри). Сделай резервную копию своего оригинального `Monster Layer.pck`.
+
+**A. Ты получил zip с исходниками** (`... (source).zip`) — самый безопасный вариант:
+
+1. **Загляни внутрь.** Там должны быть только `mod_source.json`, `mod_settings.cfg`, файлы `lay.cfg` / `boss.cfg` и картинки, GIF или видео. Что-то другое (`.exe`, `.bat`, `.dll`, `.gd`, `.pck`...) значит: этот мод не используй.
+2. **Проверь zip** антивирусом или загрузи его на [VirusTotal](https://www.virustotal.com/).
+3. **Собери его:** перетащи zip на `build-mod.bat`. В первый раз ответь **Y**, чтобы скачать инструменты, и перетащи в окно свой **оригинальный** `Monster Layer.pck`. Дождись `[OK] Built` и `VERDICT: LOOKS SAFE`.
+4. Твой мод теперь лежит в `<имя zip> - built\Monster Layer.pck` рядом с zip. Переходи к **C**.
+
+**B. Ты получил готовый `.pck`:**
+
+1. **Никогда не запускай** то, что пришло вместе с ним (`.exe`, `.bat`, установщики): мод — это только `.pck`.
+2. **Проверь его:** перетащи `.pck` на `check-mod.bat` (в первый раз он спросит твой оригинальный `Monster Layer.pck`).
+   - **LOOKS SAFE** → переходи к **C**.
+   - **WARNING** → прочитай `<имя мода>.check.txt`; если всё же играешь, то только в Windows Sandbox.
+   - **DANGER** → удали мод.
+
+**C. Играй:**
+
+- **В Windows Sandbox** (безопаснее всего; Windows 10/11 Pro, [включи её](#как-включить-windows-sandbox) один раз): перетащи `.pck` мода на `play-in-sandbox.bat`, в первый раз укажи папку игры. При первом запуске около минуты будет чёрное окно. Сохранения остаются в `sandbox\saves\`, твои настоящие сохранения не трогаются.
+- **Как обычно:** сделай копию своего `Monster Layer.pck` и сохранений (`%APPDATA%\Godot\app_userdata\MonsterLayer`), затем скопируй `Monster Layer.pck` мода в папку игры с заменой оригинала. Чтобы убрать мод, верни свою копию.
 
 | Файл | Что делает |
 |---|---|

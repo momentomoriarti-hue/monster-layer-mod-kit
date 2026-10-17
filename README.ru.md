@@ -6,6 +6,32 @@
 
 Устанавливать на ПК ничего не нужно. Скрипты используют только встроенные средства Windows (cmd, PowerShell, robocopy) и портативные программы из папки `Tools`.
 
+## ⚡ Быстрый старт: твой первый кастомный оппонент
+
+> Самый короткий путь от нуля до игры со своим оппонентом. Всё остальное в этом README — подробности: прочитай потом или ищи по странице (Ctrl+F).
+
+1. **Положи игру:** скопируй `Monster Layer.exe` и `Monster Layer.pck` из папки игры в `Original Packed`.
+2. **Подготовь кит (один раз):** в `Scripts` запусти `setup-tools.bat`, потом `unpack-original.bat`, потом `copy-unpacked.bat`.
+3. **Сделай оппонента:** создай папку `Custom Lays\My Lay\`, положи в неё видео (например, `thrust.mp4`; GIF и картинки тоже подходят) и текстовый файл `lay.cfg`:
+
+   ```ini
+   [lay]
+   name="My Lay"
+   genitals="pussy"
+   chest="boobs"
+   thrust_anim="thrust.mp4"
+   auto_fit_thrust_anim_length=true
+   ```
+
+   `genitals` — `"pussy"` или `"dick"`, `chest` — `"boobs"` или `"flat"`. Видео играет на каждый толчок и используется для всех остальных анимаций, которые ты не задал.
+   **Если нужен босс** (вместо дракона): то же самое в `Custom Bosses\My Boss\boss.cfg`, первой строкой `[boss]`.
+4. **Чтобы сразу увидеть (по желанию):** в `mod_settings.cfg` поставь `disable_default_lays=true` (появляются только твои оппоненты) или `disable_default_boss=true` (твой босс всегда вместо дракона).
+5. **Собери и играй:** запусти `Scripts\pack-moded.bat`, потом `Moded Packed\Monster Layer.exe`.
+   Игра использует твоё обычное сохранение, поэтому сначала сделай копию `%APPDATA%\Godot\app_userdata\MonsterLayer` или проверяй в Windows Sandbox через `Scripts\play-moded-in-sandbox.bat`.
+6. **Поделись:** запусти `Scripts\pack-moded-source.bat` и выложи `Moded Source\Monster Layer mod (source).zip` (см. [Как поделиться модом](#как-поделиться-модом)). `.exe` никогда не выкладывай.
+
+Все поля конфигов (размеры, трейты, шанс, портрет, другие анимации, звуки) описаны в примерах конфигов и в разделах [Кастомные оппоненты](#кастомные-оппоненты-custom-lays), [Кастомные боссы](#кастомные-боссы-custom-bosses) и [Настройки мода](#настройки-мода).
+
 ## Структура папок
 
 ```

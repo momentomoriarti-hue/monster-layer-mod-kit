@@ -6,6 +6,32 @@ A set of scripts for making mods for **Monster Layer** (a Godot 4.3 game). They 
 
 Nothing has to be installed on your PC: the scripts use only tools built into Windows (cmd, PowerShell, robocopy) plus portable programs kept in the `Tools` folder.
 
+## ⚡ Quick start: your first custom Lay
+
+> The shortest way from nothing to playing your own opponent. Everything else in this README is details: read it later or search the page (Ctrl+F).
+
+1. **Put the game in:** copy `Monster Layer.exe` and `Monster Layer.pck` from your game folder into `Original Packed`.
+2. **Prepare the kit (only once):** in `Scripts`, run `setup-tools.bat`, then `unpack-original.bat`, then `copy-unpacked.bat`.
+3. **Make the Lay:** create a folder `Custom Lays\My Lay\`, put a video in it (for example `thrust.mp4`; GIFs and pictures work too) and a text file `lay.cfg`:
+
+   ```ini
+   [lay]
+   name="My Lay"
+   genitals="pussy"
+   chest="boobs"
+   thrust_anim="thrust.mp4"
+   auto_fit_thrust_anim_length=true
+   ```
+
+   `genitals` is `"pussy"` or `"dick"`, `chest` is `"boobs"` or `"flat"`. The video plays on every thrust and is also used for every other animation you don't set.
+   **A boss instead** (replaces the dragon): the same in `Custom Bosses\My Boss\boss.cfg`, with `[boss]` as the first line.
+4. **See it at once (optional):** in `mod_settings.cfg` set `disable_default_lays=true` (only your Lays appear) or `disable_default_boss=true` (your boss always replaces the dragon).
+5. **Build and play:** run `Scripts\pack-moded.bat`, then start `Moded Packed\Monster Layer.exe`.
+   It uses your normal save, so back up `%APPDATA%\Godot\app_userdata\MonsterLayer` first, or test it in Windows Sandbox with `Scripts\play-moded-in-sandbox.bat`.
+6. **Share it:** run `Scripts\pack-moded-source.bat` and upload `Moded Source\Monster Layer mod (source).zip` (see [Sharing your mod](#sharing-your-mod)). Never upload the `.exe`.
+
+All config fields (sizes, traits, chance, portrait, other animations, sounds) are described in the example configs and in [Custom Lays](#custom-lays), [Custom Bosses](#custom-bosses) and [Mod settings](#mod-settings).
+
 ## Folder structure
 
 ```
