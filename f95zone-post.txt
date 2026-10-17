@@ -65,7 +65,8 @@ A Godot [ICODE].pck[/ICODE] is not "just assets": it holds [B]the whole game's c
 [B]For mod authors[/B]
 [LIST]
 [*]Share the [B]source zip[/B] ([ICODE]pack-moded-source.bat[/ICODE]), and if you like the [ICODE].pck[/ICODE] from [ICODE]Moded Packed\Release[/ICODE] with its SHA-256. [B]Never upload the game's [ICODE].exe[/ICODE][/B] — it's copyrighted and players already have it.
-[*]Because of these security rules, some things can never be part of a source zip: your own scripts, scenes, plugins or libraries. Everything a mod does has to be config fields and media that the kit's code reads. Missing a feature? Ask here — it can become a new config field for everyone.
+[*][B]For now, for security, a mod can contain only configs plus pictures, GIFs and videos.[/B] Your own scripts, scenes, plugins or libraries can't be part of a source zip: everything a mod does has to be config fields and media that the kit's code reads.
+[*]If development continues, we will try to find ways to add more features to the mod kit, one by one, without losing the trust of players. Missing a feature? Ask here — it can become a new config field for everyone.
 [/LIST]
 
 [SIZE=5][B]Download[/B][/SIZE]

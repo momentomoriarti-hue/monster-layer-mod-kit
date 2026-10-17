@@ -88,7 +88,7 @@ Inside the kit, `Scripts\check-mod.bat` and `Scripts\play-moded-in-sandbox.bat` 
 
 ### Security limits
 
-These limits keep players safe. They also mean **some features can never be added to the mod kit**, so keep them in mind when you plan a mod or a new kit feature.
+These limits keep players safe. **For now, a mod can contain only configs plus pictures, GIFs and videos.** This also means that some features can't be added to the mod kit yet, so keep these limits in mind when you plan a mod or a new kit feature. If development continues, we will try to find ways to add more features to the mod kit, one by one, without losing the trust of players.
 
 **What a source zip may contain.** `build-mod.bat` accepts only `mod_source.json`, `mod_settings.cfg`, `Custom Lays\<name>\lay.cfg`, `Custom Bosses\<name>\boss.cfg` and videos, GIFs and pictures in those folders. It refuses:
 

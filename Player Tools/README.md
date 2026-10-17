@@ -75,6 +75,8 @@ Warns if the mod was made for another version of the game. Command line: `build-
 
 ### Security limits
 
+**For now, for security, a mod can contain only configs plus pictures, GIFs and videos.** If development continues, we will try to find ways to add more features to the mod kit, one by one, without losing your trust.
+
 `build-mod.bat` accepts only these files in a source zip:
 
 | File | What it is |
@@ -252,6 +254,8 @@ Use exactly these versions. (Inside the Monster Layer Mod Kit the scripts also f
 Предупреждает, если мод сделан для другой версии игры. Из командной строки: `build-mod.bat "mod (source).zip" "C:\Games\Monster Layer\Monster Layer.pck"`.
 
 ### Ограничения безопасности
+
+**Пока что в целях безопасности мод может содержать только конфиги и картинки, GIF и видео.** Если разработка продолжится, мы постараемся найти способы добавлять в Mod Kit новые возможности по одной, не теряя твоего доверия.
 
 `build-mod.bat` принимает в zip с исходниками только такие файлы:
 
