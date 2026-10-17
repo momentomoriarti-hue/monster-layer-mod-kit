@@ -5,7 +5,8 @@
 
 [CENTER][SIZE=5][B]Links[/B][/SIZE]
 [B]🛠 Want to MAKE mods?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit'][B]Monster Layer Mod Kit[/B] (GitHub)[/URL]
-[B]🎮 Just want to TRY a mod safely?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools'][B]Player Tools[/B] (GitHub, with a step-by-step guide)[/URL][/CENTER]
+[B]🎮 Just want to TRY a mod safely?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools'][B]Player Tools[/B] (GitHub, with a step-by-step guide)[/URL]
+[B]🎬 Example mod:[/B] [URL='https://mega.nz/file/X7g2SZjL#y1ingcZMsWqURSwf_TGiwZZvaPaAp-wkq7jt6O9-JmQ']video[/URL] · [URL='https://mega.nz/file/WnAiDRCY#lxsKSYpPPx-QoHapzzUcXmqmGGgahHnXxEOKl-3cdUY']source mod (Femboy A)[/URL][/CENTER]
 
 [SIZE=5][B]What it is[/B][/SIZE]
 A free, open-source set of Windows scripts that unpacks your copy of Monster Layer (Godot 4.3), adds new content to it and packs it back. My goal is simple: [B]I want people to download the kit and make content[/B] — new Lays, new bosses, new animations — and share it here.
@@ -71,6 +72,13 @@ A Godot [ICODE].pck[/ICODE] is not "just assets": it holds [B]the whole game's c
 [*]Share the [B]source zip[/B] ([ICODE]pack-moded-source.bat[/ICODE]), and if you like the [ICODE].pck[/ICODE] from [ICODE]Moded Packed\Release[/ICODE] with its SHA-256. [B]Never upload the game's [ICODE].exe[/ICODE][/B] — it's copyrighted and players already have it.
 [*][B]For now, for security, a mod can contain only configs plus pictures, GIFs and videos.[/B] Your own scripts, scenes, plugins or libraries can't be part of a source zip: everything a mod does has to be config fields and media that the kit's code reads.
 [*]If development continues, we will try to find ways to add more features to the mod kit, one by one, without losing the trust of players. Missing a feature? Ask here — it can become a new config field for everyone.
+[/LIST]
+
+[SIZE=5][B]Example mod: Femboy A[/B][/SIZE]
+A small mod made with the kit: one custom Lay with its own thrust, idle and orgasm animations and portrait.
+[LIST]
+[*][B]Video:[/B] [URL='https://mega.nz/file/X7g2SZjL#y1ingcZMsWqURSwf_TGiwZZvaPaAp-wkq7jt6O9-JmQ']see it in the game (MEGA)[/URL]
+[*][B]Source mod:[/B] [URL='https://mega.nz/file/WnAiDRCY#lxsKSYpPPx-QoHapzzUcXmqmGGgahHnXxEOKl-3cdUY']Femboy A, source zip (MEGA)[/URL] — only configs, videos and pictures. Look inside, scan it, then drag it onto [ICODE]build-mod.bat[/ICODE] from the Player Tools to build the [ICODE].pck[/ICODE] yourself.
 [/LIST]
 
 [SIZE=5][B]Download[/B][/SIZE]
