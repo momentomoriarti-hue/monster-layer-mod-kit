@@ -23,7 +23,7 @@ Nothing has to be installed on your PC: the scripts use only tools built into Wi
    auto_fit_thrust_anim_length=true
    ```
 
-   `genitals` is `"pussy"` or `"dick"`, `chest` is `"boobs"` or `"flat"`. The video plays on every thrust and is also used for every other animation you don't set.
+   `genitals` is `"pussy"` or `"dick"`, `chest` is `"boobs"` or `"flat"`. The video plays on every thrust and is also used for every other animation you don't set. `auto_fit_thrust_anim_length=true` squeezes or stretches the whole video to the length of one thrust, **1.0 s** by default (the hit at 0.2 s), so a 3 s video plays 3× faster. Best results: cut the video to one stroke, with the deepest moment at 1/5 of its length.
    **A boss instead** (replaces the dragon): the same in `Custom Bosses\My Boss\boss.cfg`, with `[boss]` as the first line.
 4. **See it at once (optional):** in `mod_settings.cfg` set `disable_default_lays=true` (only your Lays appear) or `disable_default_boss=true` (your boss always replaces the dragon).
 5. **Build and play:** run `Scripts\pack-moded.bat`, then start `Moded Packed\Monster Layer.exe`.

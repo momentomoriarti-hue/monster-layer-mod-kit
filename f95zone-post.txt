@@ -3,6 +3,10 @@
 
 [B]Published with the developer's permission.[/B] The kit contains [B]no game files[/B]: you use your own copy of Monster Layer, and the kit never downloads the game.
 
+[CENTER][SIZE=5][B]Links[/B][/SIZE]
+[B]🛠 Want to MAKE mods?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit'][B]Monster Layer Mod Kit[/B] (GitHub)[/URL]
+[B]🎮 Just want to TRY a mod safely?[/B] → [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools'][B]Player Tools[/B] (GitHub, with a step-by-step guide)[/URL][/CENTER]
+
 [SIZE=5][B]What it is[/B][/SIZE]
 A free, open-source set of Windows scripts that unpacks your copy of Monster Layer (Godot 4.3), adds new content to it and packs it back. My goal is simple: [B]I want people to download the kit and make content[/B] — new Lays, new bosses, new animations — and share it here.
 
@@ -21,7 +25,7 @@ Every config field is documented right in the example configs. The full guide is
 [*]Download the kit: [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']GitHub[/URL] (Code → Download ZIP).
 [*]Copy [ICODE]Monster Layer.exe[/ICODE] and [ICODE]Monster Layer.pck[/ICODE] from your game into [ICODE]Original Packed[/ICODE].
 [*]Run [ICODE]Scripts\setup-tools.bat[/ICODE] once (it downloads GDRE Tools, Godot 4.3 and FFmpeg from their official releases), then [ICODE]unpack-original.bat[/ICODE] and [ICODE]copy-unpacked.bat[/ICODE].
-[*]Copy the example folder in [ICODE]Custom Lays[/ICODE], drop in your videos, edit [ICODE]lay.cfg[/ICODE].
+[*]Make a folder in [ICODE]Custom Lays[/ICODE], drop in your video and write a short [ICODE]lay.cfg[/ICODE] (a 6-line example is at the top of the README).
 [*]Run [ICODE]pack-moded.bat[/ICODE] and play. Share with [ICODE]pack-moded-source.bat[/ICODE] (see below).
 [/LIST]
 
@@ -70,4 +74,8 @@ A Godot [ICODE].pck[/ICODE] is not "just assets": it holds [B]the whole game's c
 [/LIST]
 
 [SIZE=5][B]Download[/B][/SIZE]
-[URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']Monster Layer Mod Kit on GitHub[/URL] — Windows 10/11. Feedback, bug reports and your creations are very welcome!
+[LIST]
+[*][B]For modders — the whole kit:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']github.com/momentomoriarti-hue/monster-layer-mod-kit[/URL] (Code → Download ZIP).
+[*][B]For players who just want to try a mod — Player Tools:[/B] [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/tree/main/Player%20Tools']the Player Tools folder and its guide[/URL]. To download: [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit/archive/refs/heads/main.zip']this ZIP[/URL], then keep only its [ICODE]Player Tools[/ICODE] folder.
+[/LIST]
+Windows 10/11. Feedback, bug reports and your creations are very welcome!
