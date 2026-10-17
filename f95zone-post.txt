@@ -18,7 +18,7 @@ Every config field is documented right in the example configs. The full guide is
 
 [SIZE=5][B]How to start[/B][/SIZE]
 [LIST=1]
-[*]Download the kit: [URL='LINK']GitHub[/URL] (Code → Download ZIP).
+[*]Download the kit: [URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']GitHub[/URL] (Code → Download ZIP).
 [*]Copy [ICODE]Monster Layer.exe[/ICODE] and [ICODE]Monster Layer.pck[/ICODE] from your game into [ICODE]Original Packed[/ICODE].
 [*]Run [ICODE]Scripts\setup-tools.bat[/ICODE] once (it downloads GDRE Tools, Godot 4.3 and FFmpeg from their official releases), then [ICODE]unpack-original.bat[/ICODE] and [ICODE]copy-unpacked.bat[/ICODE].
 [*]Copy the example folder in [ICODE]Custom Lays[/ICODE], drop in your videos, edit [ICODE]lay.cfg[/ICODE].
@@ -69,4 +69,4 @@ A Godot [ICODE].pck[/ICODE] is not "just assets": it holds [B]the whole game's c
 [/LIST]
 
 [SIZE=5][B]Download[/B][/SIZE]
-[URL='LINK']Monster Layer Mod Kit on GitHub[/URL] — Windows 10/11. Feedback, bug reports and your creations are very welcome!
+[URL='https://github.com/momentomoriarti-hue/monster-layer-mod-kit']Monster Layer Mod Kit on GitHub[/URL] — Windows 10/11. Feedback, bug reports and your creations are very welcome!
