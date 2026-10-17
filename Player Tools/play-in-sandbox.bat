@@ -98,7 +98,10 @@ Copy-Item -LiteralPath $mod -Destination (Join-Path $modDir $pckName)
 
 # Runs inside the sandbox when it starts: copies the game .exe and the mod to the
 # sandbox's own disk (the shared folders stay untouched), points the game's save
-# folder to C:\Sandbox\Saves and starts the game.
+# folder to C:\Sandbox\Saves and starts the game. The sandbox's virtual GPU has
+# Direct3D 12 only (no Vulkan, OpenGL or ANGLE), and Godot 4.3's Mobile renderer
+# (the game's default) hangs on Direct3D 12 there, so the game is started with the
+# Forward+ renderer on Direct3D 12.
 $start = @"
 @echo off
 set "PLAY=%USERPROFILE%\Desktop\Monster Layer"
@@ -107,7 +110,7 @@ copy /y "C:\Sandbox\Game\$($exe.Name)" "%PLAY%\$($exe.Name)" >nul
 copy /y "C:\Sandbox\Mod\$pckName" "%PLAY%\$pckName" >nul
 mkdir "%APPDATA%\Godot\app_userdata" 2>nul
 mklink /J "%APPDATA%\Godot\app_userdata\MonsterLayer" "C:\Sandbox\Saves" >nul
-start "" /D "%PLAY%" "%PLAY%\$($exe.Name)"
+start "" /D "%PLAY%" "%PLAY%\$($exe.Name)" --rendering-driver d3d12 --rendering-method forward_plus --log-file "C:\Sandbox\Saves\logs\sandbox.log"
 "@
 [IO.File]::WriteAllText((Join-Path $launcher 'start.cmd'), $start.Replace("`n", "`r`n").Replace("`r`r`n", "`r`n"), $utf8)
 

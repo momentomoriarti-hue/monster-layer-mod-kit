@@ -115,7 +115,8 @@ Or in PowerShell run as administrator: `Enable-WindowsOptionalFeature -Online -F
 
 ### What it costs
 
-- **Lower FPS.** The game gets a virtual graphics card. With a modern GPU and driver it runs on your GPU but slower than normal; if the game can't use it (Vulkan isn't available there), Godot falls back to OpenGL or software rendering, and then the game can be much slower and choppier. Monster Layer is a light 2D game, so it usually stays playable.
+- **Lower FPS.** The game gets a virtual graphics card that runs on your real GPU, but slower than normal. It only supports Direct3D 12 (no Vulkan or OpenGL), so `play-in-sandbox.bat` starts the game with Godot's Direct3D 12 driver and the Forward+ renderer: the game's own Mobile renderer hangs there on a black screen. The picture can differ slightly from normal play. Monster Layer is a light 2D game, so it stays playable.
+- **The first start is slow:** the game compiles its shaders, which can take a minute with a black window. They are kept in `sandbox\saves\shader_cache\`, so later starts are faster.
 - **Startup takes longer:** about 10–30 seconds for the sandbox to start, then the game is copied into it.
 - **Memory:** the sandbox takes up to 4 GB of RAM while it runs.
 - **One sandbox at a time,** and every start is a fresh Windows: settings made inside it are lost, only the saves in `sandbox\saves\` stay.
@@ -292,7 +293,8 @@ Use exactly these versions. (Inside the Monster Layer Mod Kit the scripts also f
 
 ### Чем за это платишь
 
-- **Ниже FPS.** Игра получает виртуальную видеокарту. С современной видеокартой и драйвером она работает на твоей видеокарте, но медленнее обычного; если игра не может её использовать (Vulkan там недоступен), Godot переключается на OpenGL или программную отрисовку, и тогда игра может идти заметно медленнее и рывками. Monster Layer — лёгкая 2D-игра, так что обычно играть можно.
+- **Ниже FPS.** Игра получает виртуальную видеокарту, которая работает на твоей настоящей видеокарте, но медленнее обычного. Она поддерживает только Direct3D 12 (без Vulkan и OpenGL), поэтому `play-in-sandbox.bat` запускает игру через драйвер Direct3D 12 Godot с рендерером Forward+: собственный рендерер игры Mobile там зависает на чёрном экране. Картинка может немного отличаться от обычной игры. Monster Layer — лёгкая 2D-игра, так что играть можно.
+- **Первый запуск долгий:** игра компилирует шейдеры, это может занять минуту с чёрным окном. Они сохраняются в `sandbox\saves\shader_cache\`, так что следующие запуски быстрее.
 - **Запуск дольше:** песочница стартует примерно 10–30 секунд, потом в неё копируется игра.
 - **Память:** пока песочница работает, она занимает до 4 ГБ ОЗУ.
 - **Одна песочница за раз,** и каждый запуск — чистая Windows: настройки внутри теряются, остаются только сохранения в `sandbox\saves\`.

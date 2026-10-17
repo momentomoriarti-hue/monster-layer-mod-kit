@@ -156,7 +156,11 @@ builds it (exit codes: 0 built, 3 refused, 1 failed) and checks the result with
 features on for the user. Set `MLMK_SANDBOX_DRYRUN=1` to only write
 `Player Tools/sandbox/Monster Layer.wsb` and `launcher/start.cmd` without
 starting it, and check the `.wsb` (networking disabled, read-only game, mod and
-launcher folders, only `saves` writable).
+launcher folders, only `saves` writable). Inside the sandbox the virtual GPU
+supports only Direct3D 12 (no Vulkan, OpenGL or ANGLE), and the game's Mobile
+renderer hangs on it, so `start.cmd` runs the game with
+`--rendering-driver d3d12 --rendering-method forward_plus` and logs to
+`saves/logs/sandbox.log`.
 
 ## Rules for agents working in this repository
 
