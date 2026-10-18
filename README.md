@@ -202,7 +202,11 @@ To add a Lay, copy `Simplified_Anims_Custom_Lay_Example`, rename the copy, edit 
 name="Mira"            ; shown in the game, optional (folder name by default)
 genitals="pussy"       ; "pussy" or "dick"
 chest="boobs"          ; "boobs" (female) or "flat" (male)
-chance=100             ; percent of one species' chance (default 100)
+base_chance=100        ; percent of one species' chance (default 100)
+;chance_per_defeated=0 ; optional: added for every Lay defeated in the run
+;max_chance=""         ; optional: the highest chance it can reach
+;min_defeated=0        ; optional: in the pool only after this many defeated Lays
+;max_defeated=""       ; optional: leaves the pool after this many defeated Lays
 ;boob_size="large"     ; optional: tiny, small, average, large, huge or a number 0.8-1.2
 ;dick_size="hefty"     ; optional: mini, little, average, hefty, massive or a number 0.8-1.5
 ;pronoun="(she/they)"  ; optional, by default (she/her) for boobs, (he/him) for flat
@@ -243,11 +247,19 @@ Every generated Lay (the first Lay of a run, and each of the 3 Lays you choose f
 | boobs | dick | Boobs & Dick |
 | flat | pussy | Chest & Pussy |
 
-- With `chance=100` (the default) a custom Lay is exactly as likely as any one species with the same body. For example, with all sliders at 100 it appears in 2.5% of slots, like a kobold with boobs and a pussy. `chance=200` makes it twice as likely, `50` half, `0` never.
+- With `base_chance=100` (the default) a custom Lay is exactly as likely as any one species with the same body. For example, with all sliders at 100 it appears in 2.5% of slots, like a kobold with boobs and a pussy. `base_chance=200` makes it twice as likely, `50` half, `0` never. (Older versions of the kit called it `chance`; `chance=` still works.)
 - If the slider for its body is at 0, it never appears, just like normal Lays with that body.
 - Normal Lays always stay possible. The more custom Lays there are, the rarer each species gets, the same as adding a species to the game.
 
 The tutorial, bosses and rare characters are not affected.
+
+**The chance during a run.** `chance` above is the chance in use for this roll:
+
+```
+chance = base_chance + chance_per_defeated × Lays defeated in this run   (between 0 and max_chance)
+```
+
+It is added, not multiplied. The Nth Lay of a run is rolled with N-1 defeated Lays, and endless mode keeps counting (10 Lays per loop; bosses don't count). With `min_defeated` and `max_defeated` the Lay is in the pool only while the defeated count is in that range, so it can appear only later in a run, or disappear. Example: `base_chance=0`, `chance_per_defeated=20`, `max_chance=200`, `min_defeated=3` — never among the first 3 Lays, then 60, 80, 100... up to 200.
 
 ### Sex animation
 
@@ -342,7 +354,7 @@ Use them when the sex video has its own sound. Other game sounds (hearts, cum, m
 
 - **The fight is the dragon's.** It has the same attacks, the special hearts (guard, shield, speed), 3 rounds with stamina recovery between them, and the same game over screen. The boss's name, chest, genitals, sizes, sounds and animations come from `boss.cfg`. The animation fields are the same as for Lays. `orgasm_anim` plays at the end of each round.
 - **Intro.** Before the fight the white intro screen says "To lay <name>" instead of "To lay the dragon", and `intro_anim` (a video or picture) is shown under the text until the screen fades out at 7-8 s.
-- **Chance.** The dragon always takes the body of the highest run start slider, so a custom boss's weight is `chance / 100 × slider for its body / highest slider`, and the dragon's weight is 1. With `chance=100` (the default) and the boss's body being the favourite one it's 50/50 with the dragon; with that slider at half the highest, 1/3; at 0, never.
+- **Chance.** The dragon always takes the body of the highest run start slider, so a custom boss's weight is `chance / 100 × slider for its body / highest slider`, and the dragon's weight is 1. With `base_chance=100` (the default) and the boss's body being the favourite one it's 50/50 with the dragon; with that slider at half the highest, 1/3; at 0, never. `chance_per_defeated`, `max_chance`, `min_defeated` and `max_defeated` work as for Lays, but count only **bosses** defeated in the run: 0 for the first end boss, +1 for every loop of endless mode. For example `min_defeated=1` makes a boss appear only from the second loop on.
 - **No traits.** The game's bosses have no traits, hidden or not, so `boss.cfg` has no `traits` field. It also has no portrait or pronouns: a boss has no profile screen.
 - **Ero.** The optional post-game boss Ero (with its dialogue and credits) isn't replaced.
 

@@ -14,6 +14,9 @@ extends Node
 #   weight / (number of species + sum of all custom weights).
 # With chance=100 a custom Lay is exactly as likely as any one species with the
 # same body; 200 = twice as likely, 50 = half. Normal Lays always stay possible.
+# "chance" is getChance(): base_chance, changed by chance_per_defeated for every
+# opponent defeated in the run, capped by max_chance, and only while the defeated
+# count is within min_defeated..max_defeated (bosses count defeated bosses).
 #
 # Custom Bosses: every folder in res://custom_bosses/ with a boss.cfg can replace
 # the dragon, the end boss of a run. They use the dragon's fight (attacks, special
@@ -102,16 +105,21 @@ func loadLay(basedir, folder, configname, section):
 	if layname == "":
 		layname = folder
 
-	# Percent of one species' chance; empty or not set = 100.
-	var chancetext = str(config.get_value("lay", "chance", "")).strip_edges()
-	var chance = 100.0 if chancetext == "" else maxf(chancetext.to_float(), 0)
+	# Percent of one species' (or the dragon's) chance; empty or not set = 100.
+	# "chance" is the old name of base_chance, still read for older mods.
+	var basechance = maxf(getNumber(config, "base_chance", getNumber(config, "chance", 100.0)), 0)
 
 	var lay = {
 		"id": folder,
 		"name": layname,
 		"genitals": GENITALS_ALIASES[genitals],
 		"chest": CHEST_ALIASES[chest],
-		"chance": chance,
+		"base_chance": basechance,
+		"chance_per_defeated": getNumber(config, "chance_per_defeated", 0.0),
+		# -1 = no limit.
+		"max_chance": getNumber(config, "max_chance", -1.0),
+		"min_defeated": getNumber(config, "min_defeated", 0.0),
+		"max_defeated": getNumber(config, "max_defeated", -1.0),
 		"pronoun": str(config.get_value("lay", "pronoun", "")),
 		"base_species": species,
 		"media": loadMedia(basedir, folder, config),
@@ -314,6 +322,47 @@ func onStroke(anim, kind):
 		node.onStroke(kind)
 
 
+# A number from lay.cfg; empty or not set = default.
+func getNumber(config, key, default):
+	var text = str(config.get_value("lay", key, "")).strip_edges()
+	return default if text == "" else text.to_float()
+
+
+# How many opponents of this kind the player has beaten in this run, counting
+# every loop of endless mode: for a Lay all Lays (10 per loop, the same count the
+# game's difficulty uses), for a boss the end bosses (1 per finished loop).
+func getDefeated(lay):
+	if lay["boss"]:
+		return GameManager.endlessloop
+	return mini(GameManager.currentcombat, 10) + 10 * GameManager.endlessloop
+
+
+# min_defeated / max_defeated (lay.cfg): the Lay or boss is only in the pool
+# while the defeated count is in that range.
+func inPool(lay):
+	var defeated = getDefeated(lay)
+	return defeated >= lay["min_defeated"] && (lay["max_defeated"] < 0 || defeated <= lay["max_defeated"])
+
+
+# The chance in use right now: base_chance plus chance_per_defeated for every
+# defeated opponent (added, not multiplied), at most max_chance, at least 0;
+# 0 outside the min_defeated..max_defeated range.
+func getChance(lay):
+	if !inPool(lay):
+		return 0.0
+	var chance = lay["base_chance"] + lay["chance_per_defeated"] * getDefeated(lay)
+	if lay["max_chance"] >= 0:
+		chance = minf(chance, lay["max_chance"])
+	return maxf(chance, 0.0)
+
+
+# Last resort when nothing else can be picked: every Lay or boss in the pool is
+# equally likely, or all of them if none is in the pool.
+func equalWeights(list):
+	var pool = list.filter(func(lay): return inPool(lay))
+	return list.map(func(lay): return 1.0 if pool.is_empty() || inPool(lay) else 0.0)
+
+
 func getBodyType(lay):
 	var bodytype = "boob" if lay["chest"] == "boobs" else "chest"
 	return bodytype + lay["genitals"]
@@ -329,7 +378,7 @@ func getWeights():
 	for lay in lays:
 		var weight = 0.0
 		if sum > 0:
-			weight = lay["chance"] / 100.0 * maxf(float(sliders[getBodyType(lay)]), 0) / sum
+			weight = getChance(lay) / 100.0 * maxf(float(sliders[getBodyType(lay)]), 0) / sum
 		weights.append(weight)
 	return weights
 
@@ -376,9 +425,9 @@ func getDefaultWeight():
 func getPickWeights():
 	var weights = getWeights()
 	if getDefaultWeight() == 0 && sumOf(weights) <= 0:
-		weights = lays.map(func(lay): return lay["chance"] / 100.0)
+		weights = lays.map(func(lay): return getChance(lay) / 100.0)
 		if sumOf(weights) <= 0:
-			weights = lays.map(func(lay): return 1.0)
+			weights = equalWeights(lays)
 	return weights
 
 
@@ -463,15 +512,15 @@ func pickBoss() -> Dictionary:
 	for boss in bosses:
 		var weight = 0.0
 		if highest > 0:
-			weight = boss["chance"] / 100.0 * maxf(float(sliders[getBodyType(boss)]), 0) / highest
+			weight = getChance(boss) / 100.0 * maxf(float(sliders[getBodyType(boss)]), 0) / highest
 		weights.append(weight)
 	var dragon = 1.0
 	if bosses.size() > 0 && ModSettings.getBool("disable_default_boss"):
 		dragon = 0.0
 		if sumOf(weights) <= 0:
-			weights = bosses.map(func(boss): return boss["chance"] / 100.0)
+			weights = bosses.map(func(boss): return getChance(boss) / 100.0)
 			if sumOf(weights) <= 0:
-				weights = bosses.map(func(boss): return 1.0)
+				weights = equalWeights(bosses)
 	var total = dragon + sumOf(weights)
 	var rand = randf_range(0, total)
 	for i in range(bosses.size()):
