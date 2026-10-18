@@ -33,6 +33,9 @@ const BOB = {
 	"pound": {"rise": 0.2, "fall": 0.3, "lift": 0.025, "zoom": 0.05},
 }
 const LOOPED = ["thrust", "pound", "idle", "hypno"]
+# Stroke videos fitted to the stroke's length (auto_fit_<kind>_anim_length) always
+# play to their end, then show their first frame until the next stroke.
+const STROKES = ["thrust", "pound"]
 const FALLBACK = {
 	"thrust": ["pound"],
 	"pound": ["thrust"],
@@ -55,6 +58,10 @@ var bob = 0.0
 var bobkind = "thrust"
 var bobtween
 var hypnotween
+# Strokes so far, and the stroke each fitted stroke video was started for: it
+# plays again at its end only for a stroke that started after it.
+var strokes = 0
+var video_stroke = {}
 
 
 func setup(animnode, lay):
@@ -104,7 +111,7 @@ func createNodes(kind):
 			else:
 				node = Sprite2D.new()
 				# Pictures are imported by Godot at pack time, so they load as textures.
-				node.texture = load(path)
+				node.texture = CustomLays.loadTexture(path)
 				var maxsize = MAX_SIZE
 				if BOB.has(kind):
 					# Leave room for the bob zoom, so the picture stays inside the area at its peak.
@@ -156,6 +163,17 @@ func showFirstFrame(player):
 	var kind = getKind(player)
 	var playing = media.has(kind) && media[kind]["node"] == player && (kind == current || (kind == "hypno" && Perks.intrance))
 	if !playing:
+		player.paused = true
+
+
+# Shows the video's first frame, paused (the look between strokes).
+func rewindPaused(player):
+	player.stop()
+	player.paused = false
+	player.play()
+	for i in range(2):
+		await get_tree().process_frame
+	if is_instance_valid(player):
 		player.paused = true
 
 
@@ -231,22 +249,39 @@ func showOnly(kind):
 				node.visible = (k == kind && node == media[k]["node"])
 
 
+# The media the game's state asks for right now ("" = none: the last stroke media
+# stays on screen, paused).
+func wantedKind():
+	if special != "":
+		return special
+	match anim.activestate:
+		"thrust", "freecum":
+			return resolve("thrust")
+		"pound":
+			return resolve("pound")
+		_:
+			return resolve("idle") if media.has("idle") else ""
+
+
+# A fitted stroke video that is still playing (it finishes before the idle).
+func fittedPlaying(kind):
+	if !STROKES.has(kind) || !media.has(kind) || !media[kind].get("fit", false):
+		return false
+	var node = media[kind]["node"]
+	return node is VideoStreamPlayer && node.is_playing() && !node.paused
+
+
 func _process(_delta):
 	if anim == null || !is_instance_valid(anim):
 		return
 	if special != "" && anim.activestate != "freecum":
 		special = ""
-	var wanted = ""
-	if special != "":
-		wanted = special
-	else:
-		match anim.activestate:
-			"thrust", "freecum":
-				wanted = resolve("thrust")
-			"pound":
-				wanted = resolve("pound")
-			_:
-				wanted = resolve("idle") if media.has("idle") else ""
+	var wanted = wantedKind()
+	# The stroke ended but its fitted video hasn't: let it finish first
+	# (onFinished() then rewinds it to its first frame).
+	if wanted != current && special == "" && (wanted == "" || wanted == resolve("idle")) && fittedPlaying(current):
+		updateBob()
+		return
 	if wanted != current:
 		if current != "":
 			pauseMedia(current)
@@ -266,6 +301,8 @@ func playMedia(kind, fromstart = false):
 		choose(kind)
 		node = info["node"]
 	showOnly(kind)
+	if atstart:
+		video_stroke[kind] = strokes
 	if node is VideoStreamPlayer:
 		if fromstart:
 			node.stop()
@@ -299,6 +336,13 @@ func onFinished(node):
 		return
 	if kind != current && !(kind == "hypno" && hypnoshowing):
 		return
+	# A fitted stroke video plays once per stroke: again only for a stroke that
+	# started while it played, otherwise back to its first frame. (Its end and the
+	# game's end of the stroke come at the same moment, in either order.)
+	if STROKES.has(kind) && media[kind].get("fit", false) && (wantedKind() != kind || strokes <= video_stroke.get(kind, -1)):
+		rewindPaused(node)
+		return
+	video_stroke[kind] = strokes
 	choose(kind)
 	var next = media[kind]["node"]
 	next.paused = false
@@ -346,10 +390,15 @@ func onHypno(animname):
 #   a thrust video with reset_on_pause restarts from a random clip on every thrust.
 # Other videos go on and pick a new clip when they finish a loop (onFinished()).
 func onStroke(kind):
+	strokes += 1
 	if special != "":
 		return
 	var shown = resolve(kind)
 	if shown == "":
+		return
+	# A fitted video that already stopped on its first frame starts this stroke.
+	if shown == current && currentClip(shown)["type"] != "image" && media[shown].get("fit", false) && !fittedPlaying(shown):
+		playMedia(shown, true)
 		return
 	if currentClip(shown)["type"] == "image":
 		if shown == current:

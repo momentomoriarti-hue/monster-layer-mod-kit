@@ -3,7 +3,8 @@ setlocal
 chcp 65001 >nul
 call "%~dp0_common.bat"
 
-rem Builds the latest modded project (Moded Unpacked\build_<time>) into Moded Packed
+rem Builds the latest modded project (Moded Unpacked\build_<time>) with one mod from
+rem Mods (pack-moded.bat "<mod name>", or choose from the list) into Moded Packed
 rem as .exe + .pck. Uses the bundled Godot 4.3 editor. The original game .exe is used
 rem as the export template, so no separate Godot export templates are needed.
 rem Then make-release.bat puts the files to share (.pck only, no .exe) into Moded Packed\Release.
@@ -27,6 +28,7 @@ if not exist "%BUILD%\project.godot" (
     echo [ERROR] "%BUILD%" has no project.godot.
     goto :fail
 )
+call "%~dp0_pick_mod.bat" "%~1" || goto :fail
 echo Packing latest build: "%BUILD%"
 if not defined ORIGINAL_EXE (
     echo [ERROR] No .exe file found in "%ORIGINAL_PACKED%".
@@ -37,7 +39,7 @@ for %%F in ("%ORIGINAL_EXE%") do set "GAME_NAME=%%~nF"
 set "TEMPLATE=%ORIGINAL_EXE:\=/%"
 
 echo Applying mod kit changes...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\Player Tools\build\apply-mods.ps1" -Source "%ROOT%" -Build "%BUILD%" -Ffmpeg "%ROOT%\Tools\FFmpeg\ffmpeg.exe" -Cache "%ROOT%\Tools\media_cache"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\Player Tools\build\apply-mods.ps1" -Source "%MOD_DIR%" -Build "%BUILD%" -Ffmpeg "%ROOT%\Tools\FFmpeg\ffmpeg.exe" -Cache "%ROOT%\Tools\media_cache"
 if errorlevel 1 (
     echo [ERROR] Applying mod kit changes failed.
     goto :fail
@@ -96,12 +98,21 @@ if not exist "%MODED_PACKED%\%GAME_NAME%.pck" (
 call "%~dp0make-release.bat" nopause
 if errorlevel 1 goto :fail
 
+rem The game started from Moded Packed keeps its saves apart from your real ones
+rem (%APPDATA%\MonsterLayer Mod Test). override.cfg is only here, never in Release.
+(
+    echo [application]
+    echo config/use_custom_user_dir=true
+    echo config/custom_user_dir_name="MonsterLayer Mod Test"
+) > "%MODED_PACKED%\override.cfg"
+
 echo.
 echo Done. The modded game is in "%MODED_PACKED%" ^(.exe + .pck, for testing^).
 echo Share only "%MODED_PACKED%\Release": the .pck, SHA256.txt and HOW_TO_INSTALL.txt, never the .exe.
-pause
+echo The game in Moded Packed uses a separate test save, your real saves aren't touched.
+if not defined MLMK_NOPAUSE pause
 exit /b 0
 
 :fail
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 1

@@ -2,35 +2,44 @@
 
 **English** | [Русский](README.ru.md)
 
-A set of scripts for making mods for **Monster Layer** (a Godot 4.3 game). They unpack the game into an editable Godot project, give you a separate copy to mod, and build that copy back into a playable `.exe` + `.pck`.
+Make mods for **Monster Layer** (a Godot 4.3 game): your own opponents (Lays) and bosses from videos, GIFs and pictures, previewed right in the game. The **Mod Kit app** does it all in windows that look like the game; the scripts behind it can also be run by hand, and they can unpack the game into an editable Godot project for deeper mods.
 
-Nothing has to be installed on your PC: the scripts use only tools built into Windows (cmd, PowerShell, robocopy) plus portable programs kept in the `Tools` folder.
+Nothing has to be installed on your PC: everything uses tools built into Windows (cmd, PowerShell, robocopy) plus portable programs kept in the `Tools` folder.
 
 ## ⚡ Quick start: your first custom Lay
 
 > The shortest way from nothing to playing your own opponent. Everything else in this README is details: read it later or search the page (Ctrl+F).
 
 1. **Put the game in:** copy `Monster Layer.exe` and `Monster Layer.pck` from your game folder into `Original Packed`.
-2. **Prepare the kit (only once):** in `Scripts`, run `setup-tools.bat`, then `unpack-original.bat`, then `copy-unpacked.bat`.
-3. **Make the Lay:** create a folder `Custom Lays\My Lay\`, put a video in it (for example `thrust.mp4`; GIFs and pictures work too) and a text file `lay.cfg`:
+2. **Start the app:** run `Monster Layer Mod Kit.bat`. The first start sets everything up by itself (downloads the tools, unpacks your game), which takes a few minutes.
+3. **Make a mod:** press **Add mod** and type its name. The first time, a tutorial leads you through every step below (you can start it again with the Tutorial button).
+4. **Make the Lay:** press **Custom Lays → Add Lay**. Press **Lay config** and pick `genitals` and `chest`. Then choose **Thrust** in the animation list, press **Animation config → Add files...** and pick your video (GIFs and pictures work too). Turn on **Fit to the animation's length**: the whole video is squeezed or stretched to one thrust, **1.0 s** (the hit at 0.2 s), so a 3 s video plays 3× faster. Best results: cut the video to one stroke, with the deepest moment at 1/5 of its length. The video plays on every thrust and is also used for every other animation you don't set.
+5. **Look at it:** your Lay stands in the middle of the screen in the game's own round. **Trigger** plays the chosen animation as in the game; **Simulate fight** starts a real fight with it (the gear sets infinite stamina, infinite Pleasure and the stage). Press **Save and exit** (or Ctrl+S).
+6. **Play it:** on the mod's screen press **Pack and launch**. The game starts with your mod and a separate test save: your real saves aren't touched.
+7. **Share it:** press **Pack** and upload the zip from `Moded Source` (see [Sharing your mod](#sharing-your-mod)). Never upload the `.exe`.
 
-   ```ini
-   [lay]
-   name="My Lay"
-   genitals="pussy"
-   chest="boobs"
-   thrust_anim="thrust.mp4"
-   auto_fit_thrust_anim_length=true
-   ```
+**A boss** (replaces the dragon) works the same way with **Custom Bosses**. To see your Lays or boss right away in the game, open the mod's **Config** and turn on `disable_default_lays` / `disable_default_boss`.
 
-   `genitals` is `"pussy"` or `"dick"`, `chest` is `"boobs"` or `"flat"`. The video plays on every thrust and is also used for every other animation you don't set. `auto_fit_thrust_anim_length=true` squeezes or stretches the whole video to the length of one thrust, **1.0 s** by default (the hit at 0.2 s), so a 3 s video plays 3× faster. Best results: cut the video to one stroke, with the deepest moment at 1/5 of its length.
-   **A boss instead** (replaces the dragon): the same in `Custom Bosses\My Boss\boss.cfg`, with `[boss]` as the first line.
-4. **See it at once (optional):** in `mod_settings.cfg` set `disable_default_lays=true` (only your Lays appear) or `disable_default_boss=true` (your boss always replaces the dragon).
-5. **Build and play:** run `Scripts\pack-moded.bat`, then start `Moded Packed\Monster Layer.exe`.
-   It uses your normal save, so back up `%APPDATA%\Godot\app_userdata\MonsterLayer` first, or test it in Windows Sandbox with `Scripts\play-moded-in-sandbox.bat`.
-6. **Share it:** run `Scripts\pack-moded-source.bat` and upload `Moded Source\Monster Layer mod (source).zip` (see [Sharing your mod](#sharing-your-mod)). Never upload the `.exe`.
+Every field is explained behind its **i** button, in the example configs and in [Custom Lays](#custom-lays), [Custom Bosses](#custom-bosses) and [Mod settings](#mod-settings).
 
-All config fields (sizes, traits, chance, portrait, other animations, sounds) are described in the example configs and in [Custom Lays](#custom-lays), [Custom Bosses](#custom-bosses) and [Mod settings](#mod-settings).
+**Mods from older versions of the kit** open in the app as they are: their folders are moved into `Mods` and their configs updated (for example the old `chance` field becomes `base_chance`). Source zips made with older versions load with **Load mod from file**.
+
+## 🖥 The Mod Kit app
+
+`Monster Layer Mod Kit.bat` starts it, in a 16:9 window (1280x720 at first, resize it as you like). It uses the game's own background, fonts and buttons; the game itself is shown in its own portrait screen in the middle, with the app's buttons on both sides.
+
+- **Mods:** every mod in `Mods` as a button; **Add mod**, **Load mod from file** and **Exit**; **Tutorial: make your first mod** (it also starts by itself the first time you press Add mod).
+- **Load mod from file:** loads someone else's mod (its source zip or `.pck`) into `Mods`, so you can open, play and change it. Nothing of it is ever run; first Windows Defender scans it, a source zip goes through the same checks as `Player Tools\build-mod.bat` (only configs, videos and pictures, every video and picture really one), and a `.pck` is checked with `check-mod.bat` (DANGER refuses it, WARNING asks you), after which only its custom Lays, bosses and settings are taken out of it with GDRE Tools; anything else in the `.pck` is left behind. See `Mod Kit App\import-mod.ps1`.
+- **A mod:** its name (renaming it renames its folder), **Custom Lays**, **Custom Bosses**, and at the top right **Config** (how it is packed and the mod's game settings, `mod_settings.cfg`), **Pack** and **Pack and launch**.
+- **Custom Lays / Custom Bosses:** the list, the eye button next to each one (in the mod / switched off, `active`), and **Add** below.
+- **A Lay or boss:** on the left **Lay config** / **Boss config** (name, body, chance and the rest), the animation list (idle first; thrust, pound, free cum, egg, lose, orgasm, hypno, and intro for bosses; a Lay without an idle animation shows the first frame of its thrust; last, **Portrait**: the picture in its profile on the Choose your next Lay screen, with `base_species`, whose portrait is used without one), **Animation config** / **Portrait config**, **Trigger**, **Simulate fight** with its settings (gear); **Save and exit** and **Cancel** at the top right; **Hide interface** at the bottom left. **Save and exit** with a required field empty opens the config with that field in red.
+- **Trimming:** after you add a video or GIF to an animation the app offers to trim it (and the ✂ button next to it does it later): a player with one slider to scrub through it, play / pause, stop and one frame back / forward; go to a frame and press **Set start here**, then **Set end here** at another, and the window also says how long that animation lasts in the game. **Trim** makes `<name>_trim.mp4` next to it with FFmpeg, cut exactly at those frames with its sound, and puts it in the field in place of the original (which stays in the folder).
+- **Sound:** **Music: On / Off** on the first screen and on the Lay / boss screen switches the game's music (remembered); the Lay's moans are off while you edit it.
+- **Ctrl+S** saves, **Ctrl+Z** undoes the last change, **Ctrl+Y** redoes it.
+- Every field has an **i** button with its full description. The fields and descriptions come from the example configs in `Scripts\templates`, so a field added to the kit later shows up in the app by itself.
+- **Pack** makes what the mod's config says (`pack_as`): the open source zip (default), a ready `.pck` (`Moded Packed\Release`) or both. **Pack and launch** also builds the game with the mod and starts it from `Moded Packed` with a separate test save (`%APPDATA%\MonsterLayer Mod Test`). **Cancel** in the packing window stops it and deletes the unfinished build.
+
+**How it works, and why you can trust it.** The app isn't a ready-made program: it is the readable Godot project in `Mod Kit App\app` (GDScript), run with the official Godot 4.3 editor that `setup-tools.bat` downloads (checked by SHA-256). `Mod Kit App\prepare-workspace.ps1` builds its working copy, `Tools\app_workspace`: your unpacked game plus the kit's game code, with the app as the main scene and its own save folder (`%APPDATA%\MonsterLayer Mod Kit App`), so your real saves aren't touched. Previews run in the game's real scenes: a Lay is prepared with `Player Tools\build\apply-mods.ps1`, the same step as packing, and packing runs the same `Scripts\*.bat` you can run by hand. The app only reads and writes inside the kit folder.
 
 ## 💬 Contact and help
 
@@ -57,64 +66,56 @@ Monster Layer Mod Kit/
 ├── Original Unpacked/   the original game unpacked into a Godot project (do not edit)
 ├── Moded Unpacked/      your working copies: build_<date_time>/ folders, make changes here
 ├── Moded Packed/        the built modded game (.exe + .pck) for testing, and Release/ to share
-├── Custom Lays/         custom Lays (opponents), one folder per Lay
-├── Custom Bosses/       custom bosses that can replace the dragon, one folder per boss
-├── mod_settings.cfg     settings for the whole mod
+├── Mods/                your mods, one folder per mod:
+│   └── <mod name>/
+│       ├── mod.cfg            the mod's name and how it is packed (not packed into the game)
+│       ├── mod_settings.cfg   settings for the whole mod
+│       ├── Custom Lays/       custom Lays (opponents), one folder per Lay
+│       └── Custom Bosses/     custom bosses that can replace the dragon, one folder per boss
+├── Monster Layer Mod Kit.bat  starts the Mod Kit app
+├── Mod Kit App/         the app's source (GDScript) and prepare-workspace.ps1
 ├── Scripts/             the scripts described below
 ├── Player Tools/        tools for players: check, build and sandbox-play mods (+ README);
 │                        build/ holds the code that adds the mod kit features to every build
-├── Moded Source/        your mod as a source zip (pack-moded-source.bat)
-└── Tools/               GDRE Tools, Godot 4.3 and FFmpeg
+├── Moded Source/        your mods as source zips (Pack)
+└── Tools/               GDRE Tools, Godot 4.3, FFmpeg, and the app's working copy of the game
 ```
 
-## Scripts
+## Under the hood
 
-Run the scripts from the `Scripts` folder in this order:
+The app does everything through these scripts and the readable code in `Mod Kit App`; you don't need to run them yourself. They are listed so you can see what runs.
 
 | Script | What it does |
 |---|---|
-| `setup-tools.bat` | Sets up the mod kit from scratch. Downloads GDRE Tools, Godot 4.3 and FFmpeg into `Tools` and creates `Custom Lays` and `Custom Bosses` with an example in each, and `mod_settings.cfg`. You only need to run it once. Anything that is already there is skipped. |
-| `unpack-original.bat` | Unpacks `Original Packed\*.pck` into `Original Unpacked` with GDRE Tools. If `Original Unpacked` doesn't exist it is created. If it already has files they are deleted first. |
-| `copy-unpacked.bat` | Copies `Original Unpacked` into a new folder `Moded Unpacked\build_<yyyy-MM-dd_HH-mm-ss-fff>` (the current time down to milliseconds). Existing builds are never deleted or changed. |
-| `pack-moded.bat` | Builds the latest `Moded Unpacked\build_*` folder (by its time in the name) into `Moded Packed` as `Monster Layer.exe` + `Monster Layer.pck`. Before building, it adds the mod kit features (see [Custom Lays](#custom-lays), [Custom Bosses](#custom-bosses) and [Mod settings](#mod-settings)) to the build with `Player Tools\build\apply-mods.ps1`. The folder is created if it doesn't exist, and anything already in it is deleted first. At the end it runs `make-release.bat`. |
-| `make-release.bat` | Called by `pack-moded.bat`, or run it alone. Creates `Moded Packed\Release` with only the files to share: `Monster Layer.pck`, `SHA256.txt` with its hash and `HOW_TO_INSTALL.txt` (English and Russian). The `.exe` is never copied. Anything already in `Release` is deleted first. |
-| `check-mod.bat` | Checks a mod's `.pck` before you run it with `Player Tools\check-mod.bat` (see [Safety](#safety)). Drag the `.pck` onto it, or run it without one to check `Moded Packed\*.pck`. Saves the report next to the `.pck` as `<name>.check.txt`. |
-| `pack-moded-source.bat` | Packs your mod as a source zip into `Moded Source` instead of a `.pck`: only `mod_settings.cfg` and the configs and original videos, GIFs and pictures of every active Custom Lay and Custom Boss, plus `mod_source.json`. No scripts. Players build the `.pck` from it with `Player Tools\build-mod.bat`. |
-| `pack-source.ps1` | Called by `pack-moded-source.bat`. You don't need to run it. |
-| `play-moded-in-sandbox.bat` | Plays `Moded Packed\*.pck` inside Windows Sandbox with `Player Tools\play-in-sandbox.bat`, to test your mod the way a careful player would. |
-| `Player Tools\build\apply-mods.ps1` | Called by `pack-moded.bat` and by the players' `build-mod.bat`, so a mod is built by the same code on both sides. It copies `build\mod_kit`, `mod_settings.cfg`, `Custom Lays` and `Custom Bosses` into the build, converts their videos with FFmpeg, and hooks everything into the game code with `hook-game.ps1` (the lines marked `# [MLMK]`). `cfg.ps1` holds the config helpers. You don't need to run them. |
-| `_common.bat` | Shared paths that the other scripts use. You don't need to run it. |
+| `Monster Layer Mod Kit.bat` | Starts the app. The first time it runs `setup-tools.bat`, `unpack-original.bat` and `copy-unpacked.bat`, then `Mod Kit App\prepare-workspace.ps1`. |
+| `Scripts\setup-tools.bat` | Downloads GDRE Tools, Godot 4.3 and FFmpeg into `Tools` (official releases, checked by SHA-256) and creates `Mods\Example Mod`. Custom Lays, Custom Bosses and `mod_settings.cfg` from older versions of the kit are moved into `Mods\My Mod`. |
+| `Scripts\unpack-original.bat` | Unpacks `Original Packed\*.pck` into `Original Unpacked` with GDRE Tools. |
+| `Scripts\copy-unpacked.bat` | Copies `Original Unpacked` into `Moded Unpacked\build_<time>`, the copy of the game mods are packed into. |
+| `Scripts\pack-moded.bat` | **Pack and launch**, and **Pack** with `pack_as` = pck / both: builds the newest `Moded Unpacked\build_*` with one mod into `Moded Packed` (`.exe` + `.pck`, plus an `override.cfg` that gives that game a separate test save), adding the mod kit's features with `Player Tools\build\apply-mods.ps1`, then runs `make-release.bat`. |
+| `Scripts\make-release.bat` | Makes `Moded Packed\Release` with only the files to share: the `.pck`, `SHA256.txt` and `HOW_TO_INSTALL.txt`, never the `.exe`. |
+| `Scripts\pack-moded-source.bat` + `pack-source.ps1` | **Pack** (`pack_as` = zip / both): `Moded Source\<mod name> (source).zip` with only `mod_settings.cfg` and the configs and original videos, GIFs and pictures of every active Custom Lay and Custom Boss, plus `mod_source.json`. No scripts. |
+| `Player Tools\build\apply-mods.ps1` | Used by packing, by the app's previews and by the players' `build-mod.bat`, so a mod is built by the same code everywhere: copies `build\mod_kit` and the mod's settings, Lays and bosses into the build, converts their videos with FFmpeg and hooks them into the game code with `hook-game.ps1` (the lines marked `# [MLMK]`). |
+| `Mod Kit App\import-mod.ps1` | **Load mod from file**, with the checks described above. |
+| `Scripts\_common.bat`, `_pick_mod.bat` | Shared paths, and which mod to pack. |
 
-> **Tip:** `pack-moded.bat` always packs the newest `build_*` folder. To pack an older build, delete or rename the newer ones, or work in the newest one.
-
-### Typical workflow
-
-1. Put the original game files into `Original Packed`.
-2. Run `setup-tools.bat`. You only need to do this the first time.
-3. Run `unpack-original.bat`.
-4. Run `copy-unpacked.bat`. It creates a new `Moded Unpacked\build_<date_time>` folder.
-5. Edit the project in that build folder. To open it in the editor, launch `Tools\Godot\Godot_v4.3-stable_win64.exe` and import `project.godot` from the build folder.
-6. Run `pack-moded.bat`, then start the game from `Moded Packed`.
-7. To share the mod, upload only the contents of `Moded Packed\Release` (see [Sharing your mod](#sharing-your-mod)).
-
-The build doesn't need Godot export templates. The original game `.exe` is used as the template instead.
+No Godot export templates are needed: the original game `.exe` is used as the template.
 
 ### Sharing your mod
 
-Share only `Moded Packed\Release`: `Monster Layer.pck`, `SHA256.txt` and `HOW_TO_INSTALL.txt`. Never share `Monster Layer.exe` from `Moded Packed`, it's there only for testing:
+If you also share a ready `.pck` (`pack_as` = pck or both), share only `Moded Packed\Release`: `Monster Layer.pck`, `SHA256.txt` and `HOW_TO_INSTALL.txt`. Never share `Monster Layer.exe` from `Moded Packed`, it's there only for testing:
 
 - The `.exe` is the unchanged original game file. Players already have it, and it's copyrighted, so it must not be uploaded.
 - A mod that comes with an `.exe` teaches players to run unknown programs. A mod for Monster Layer never needs one, so players can safely refuse any `.exe` that comes with a mod.
 
 `HOW_TO_INSTALL.txt` tells players to back up their own `Monster Layer.pck`, put the mod's `.pck` next to their own `Monster Layer.exe`, and never run an `.exe` that came with a mod. Post the hash from `SHA256.txt` next to your download link, so players can check that the file wasn't changed.
 
-**Sharing the source.** `pack-moded-source.bat` makes `Moded Source\Monster Layer mod (source).zip`: only `mod_settings.cfg`, the `lay.cfg` / `boss.cfg` of every active Custom Lay and Custom Boss with the original videos, GIFs and pictures they use, and `mod_source.json` with the original game version it was made for. No scripts and no game files. Players can open every file, scan the whole zip with an antivirus or an online scanner, have an AI agent check it, and build the `.pck` themselves with `Player Tools\build-mod.bat`, which holds all the build code. Changes you made to the game's scripts by hand in `Moded Unpacked` are **not** in the source zip: such a mod can only be shared as a `.pck` (see [Security limits](#security-limits)).
+**Sharing the source.** **Pack** in the app makes `Moded Source\<mod name> (source).zip`: only `mod_settings.cfg`, the `lay.cfg` / `boss.cfg` of every active Custom Lay and Custom Boss with the original videos, GIFs and pictures they use, and `mod_source.json` with the original game version it was made for. No scripts and no game files. Players can open every file, scan the whole zip with an antivirus or an online scanner, have an AI agent check it, and build the `.pck` themselves with `Player Tools\build-mod.bat`, which holds all the build code. Changes you made to the game's scripts by hand in `Moded Unpacked` are **not** in the source zip: such a mod can only be shared as a `.pck` (see [Security limits](#security-limits)).
 
 ## Safety
 
 A Godot `.pck` is the whole game: all its scripts, scenes and settings. Godot has no sandbox, so a `.pck` can do anything a program can: run other programs, use the internet, delete your files. Mods made with this kit don't need any of that, so:
 
-- **Mod authors:** publish the mod's source zip (`pack-moded-source.bat`) and/or only the `.pck` (the contents of `Moded Packed\Release`). Never publish an `.exe`, a `.dll` or an archive with programs inside.
+- **Mod authors:** publish the mod's source zip (**Pack** in the app) and/or only the `.pck` (the contents of `Moded Packed\Release`). Never publish an `.exe`, a `.dll` or an archive with programs inside.
 - **Players:** use the [Player Tools](Player%20Tools/), and never run an `.exe` that came with a mod. A mod runs with your own `Monster Layer.exe`.
 
 ### Player Tools
@@ -127,7 +128,7 @@ A Godot `.pck` is the whole game: all its scripts, scenes and settings. Godot ha
 
 They download GDRE Tools, Godot 4.3 and FFmpeg when needed, from the official releases, checked by SHA-256, or use copies the player puts next to them. See [Player Tools/README.md](Player%20Tools/README.md) for what each one checks and does.
 
-Inside the kit, `Scripts\check-mod.bat` and `Scripts\play-moded-in-sandbox.bat` run these tools on your own build (`Moded Packed\*.pck` against `Original Packed`), using the kit's `Tools\`.
+In the kit, **Load mod from file** runs the same checks on other people's mods. To check or sandbox-play your own `.pck`, drag `Moded Packed\Release\Monster Layer.pck` onto `Player Tools\check-mod.bat` or `play-in-sandbox.bat`; inside the kit they use its `Tools\`.
 
 ### Security limits
 
@@ -151,7 +152,7 @@ These limits keep players safe. **For now, a mod can contain only configs plus p
 
 ## Mod settings
 
-`mod_settings.cfg` in the mod kit folder holds settings for the whole mod. `setup-tools.bat` creates it from `Scripts\templates\mod_settings.cfg`. Edit it, then run `pack-moded.bat`: the values are packed into the game.
+`mod_settings.cfg` in the mod's folder (`Mods\<mod name>\`) holds settings for the whole mod; in the app it is **Config** on the mod's screen. A new mod gets it from `Scripts\templates\mod_settings.cfg`. Edit it, then run `pack-moded.bat`: the values are packed into the game.
 
 | Setting | Default | What it does |
 |---|---|---|
@@ -181,7 +182,7 @@ A looping video switches to another copy only when it finishes a loop, never in 
 
 ## Custom Lays
 
-A Lay is your opponent. Each folder in `Custom Lays` with a `lay.cfg` is one custom Lay. `active=false` in `lay.cfg` switches a Lay off: it isn't packed and never appears. The example `Simplified_Anims_Custom_Lay_Example` is switched off this way. It is a Lay with simplified animations: videos or pictures replace the models in the round.
+A Lay is your opponent. Each folder in the mod's `Custom Lays` (`Mods\<mod name>\Custom Lays`) with a `lay.cfg` is one custom Lay. `active=false` in `lay.cfg` switches a Lay off: it isn't packed and never appears. The example `Simplified_Anims_Custom_Lay_Example` is switched off this way. It is a Lay with simplified animations: videos or pictures replace the models in the round.
 
 ```
 Custom Lays/
@@ -193,7 +194,7 @@ Custom Lays/
     └── portrait.png  profile picture on the Lay choice screen (optional)
 ```
 
-To add a Lay, copy `Simplified_Anims_Custom_Lay_Example`, rename the copy, edit `lay.cfg`, then run `pack-moded.bat`. You don't need to run `copy-unpacked.bat` again, because Custom Lays are added at pack time.
+To add a Lay, press **Add Lay** in the app. You don't need to run `copy-unpacked.bat` again, because Custom Lays are added at pack time.
 
 `lay.cfg`:
 
@@ -202,7 +203,7 @@ To add a Lay, copy `Simplified_Anims_Custom_Lay_Example`, rename the copy, edit 
 name="Mira"            ; shown in the game, optional (folder name by default)
 genitals="pussy"       ; "pussy" or "dick"
 chest="boobs"          ; "boobs" (female) or "flat" (male)
-base_chance=100        ; percent of one species' chance (default 100)
+;base_chance=""        ; empty = as likely as one species, or a percent of that
 ;chance_per_defeated=0 ; optional: added for every Lay defeated in the run
 ;max_chance=""         ; optional: the highest chance it can reach
 ;min_defeated=0        ; optional: in the pool only after this many defeated Lays
@@ -230,28 +231,19 @@ pound_anim_reset_on_pause=false   ; true = rewind to the start when pounding sto
 
 ### How the spawn chance works
 
-The game picks a normal Lay in two steps: its species evenly, 1 of 9, and then its body with the run start sliders, with probability slider / sum of all 4 sliders. So, for example, a kobold with boobs and a pussy has the weight 1 × Boobs & Pussy / sum.
-
-A custom Lay is simply one more species in this roll. Its chest and genitals are fixed, so it gets the same kind of weight:
+The game picks a normal Lay's species evenly, 1 of 9, and then its body with the run start sliders. A custom Lay is simply one more species in this roll, with the weight
 
 ```
-weight = chance / 100 × slider for its body / sum of all 4 sliders
+weight = chance / 100      (0 when the slider for its chest + genitals is at 0)
 ```
 
 Every generated Lay (the first Lay of a run, and each of the 3 Lays you choose from after a win, separately) is a given custom Lay with probability weight / (9 + sum of the weights of all custom Lays); otherwise a normal Lay is generated as usual.
 
-| chest | genitals | slider |
-|---|---|---|
-| boobs | pussy | Boobs & Pussy |
-| flat | dick | Chest & Dick |
-| boobs | dick | Boobs & Dick |
-| flat | pussy | Chest & Pussy |
+- With `base_chance` empty (the default, same as 100) a custom Lay is exactly as likely as any one species: with 9 species and N custom Lays, each of them gets 1 / (9 + N) of the slots. The app shows this number for your mod. `base_chance=200` makes it twice as likely, `50` half, `0` never. (Older versions of the kit called it `chance`; `chance=` still works.)
+- If the slider for its body (chest + genitals) is at 0, it never appears.
+- Normal Lays always stay possible. The more custom Lays there are, the rarer every species and every custom Lay gets, the same as adding species to the game.
 
-- With `base_chance=100` (the default) a custom Lay is exactly as likely as any one species with the same body. For example, with all sliders at 100 it appears in 2.5% of slots, like a kobold with boobs and a pussy. `base_chance=200` makes it twice as likely, `50` half, `0` never. (Older versions of the kit called it `chance`; `chance=` still works.)
-- If the slider for its body is at 0, it never appears, just like normal Lays with that body.
-- Normal Lays always stay possible. The more custom Lays there are, the rarer each species gets, the same as adding a species to the game.
-
-The tutorial, bosses and rare characters are not affected.
+The tutorial, bosses and the rare characters (rolled apart) are not affected.
 
 **The chance during a run.** `chance` above is the chance in use for this roll:
 
@@ -294,9 +286,9 @@ Besides thrust and pound, a Lay can have a file for every other moment of the ro
 
 | Field | When | Plays | Game length (auto-fit) | Falls back to |
 |---|---|---|---|---|
-| `thrust_anim` | a click, one deep stroke | from where it paused, or from the start with `reset_on_pause` | 1.0 s, hit at 0.2 s | `pound_anim` |
+| `thrust_anim` | a click, one deep stroke | from where it paused, or from the start with `reset_on_pause`; fitted videos always play to their end | 1.0 s, hit at 0.2 s | `pound_anim` |
 | `pound_anim` | holding the button | loops | 0.5 s per stroke, hit at 0.2 s | `thrust_anim` |
-| `idle_anim` | not fucking, between strokes | loops | 2.0 s | thrust/pound video paused |
+| `idle_anim` | not fucking, between strokes | loops | none: plays at the video's own speed | first frame of the thrust/pound video |
 | `free_cum_anim` | free cum perks turn a thrust into a cum shot | once, from the start | 2.0 s, cum at 0.7 s | `thrust_anim` |
 | `egg_anim` | free cum when you play as Sylvia (1-3 eggs) | once, from the start | 2.0 s, eggs at 1.4 s / 1.3 + 1.6 s / 1.3 + 1.6 + 1.8 s | `free_cum_anim` |
 | `lose_anim` | you run out of stamina and cum (game over) | once, from the start | 2.0 s, game over screen after 1.0 s | `egg_anim` (Sylvia), `free_cum_anim` |
@@ -354,7 +346,7 @@ Use them when the sex video has its own sound. Other game sounds (hearts, cum, m
 
 - **The fight is the dragon's.** It has the same attacks, the special hearts (guard, shield, speed), 3 rounds with stamina recovery between them, and the same game over screen. The boss's name, chest, genitals, sizes, sounds and animations come from `boss.cfg`. The animation fields are the same as for Lays. `orgasm_anim` plays at the end of each round.
 - **Intro.** Before the fight the white intro screen says "To lay <name>" instead of "To lay the dragon", and `intro_anim` (a video or picture) is shown under the text until the screen fades out at 7-8 s.
-- **Chance.** The dragon always takes the body of the highest run start slider, so a custom boss's weight is `chance / 100 × slider for its body / highest slider`, and the dragon's weight is 1. With `base_chance=100` (the default) and the boss's body being the favourite one it's 50/50 with the dragon; with that slider at half the highest, 1/3; at 0, never. `chance_per_defeated`, `max_chance`, `min_defeated` and `max_defeated` work as for Lays, but count only **bosses** defeated in the run: 0 for the first end boss, +1 for every loop of endless mode. For example `min_defeated=1` makes a boss appear only from the second loop on.
+- **Chance.** A custom boss has the weight `chance / 100` against the dragon's 1 (0 when the slider for its body is at 0). With `base_chance` empty (the default, same as 100) each of N custom bosses and the dragon are equally likely, 1 / (1 + N). `chance_per_defeated`, `max_chance`, `min_defeated` and `max_defeated` work as for Lays, but count only **bosses** defeated in the run: 0 for the first end boss, +1 for every loop of endless mode. For example `min_defeated=1` makes a boss appear only from the second loop on.
 - **No traits.** The game's bosses have no traits, hidden or not, so `boss.cfg` has no `traits` field. It also has no portrait or pronouns: a boss has no profile screen.
 - **Ero.** The optional post-game boss Ero (with its dialogue and credits) isn't replaced.
 

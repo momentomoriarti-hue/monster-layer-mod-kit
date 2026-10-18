@@ -35,9 +35,9 @@ if not exist "%ORIGINAL_UNPACKED%\project.godot" (
 
 echo.
 echo Done. The original project is in "%ORIGINAL_UNPACKED%".
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 0
 
 :fail
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 1

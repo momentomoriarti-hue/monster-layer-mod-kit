@@ -5,25 +5,25 @@ extends Node
 # lay.cfg says active=false (pack-moded.bat doesn't even pack those).
 #
 # Spawn chance: a custom Lay is one more species in the game's own roll.
-# The game picks a normal Lay's species evenly (1 of 9), then its body type with
-# the body preference sliders (slider / sum of sliders). So a kobold with boobs
-# and a pussy has weight 1 * boobpussy / sum. A custom Lay has a fixed body, so
-# it gets the same kind of weight:
-#   weight = chance / 100 * slider(its body type) / sum of sliders
+# The game picks a normal Lay's species evenly (1 of 9; the body comes after,
+# from the body preference sliders). A custom Lay has the weight
+#   weight = chance / 100   (0 when the slider for its fixed body is at 0)
 # and each generated Lay is a custom Lay with probability
 #   weight / (number of species + sum of all custom weights).
-# With chance=100 a custom Lay is exactly as likely as any one species with the
-# same body; 200 = twice as likely, 50 = half. Normal Lays always stay possible.
+# With chance=100 (the default) a custom Lay is exactly as likely as any one
+# species: 1 / (9 + number of custom Lays); 200 = twice as likely, 50 = half.
+# The more custom Lays, the rarer every species and every custom Lay. Normal
+# Lays always stay possible; the rare characters are rolled apart.
 # "chance" is getChance(): base_chance, changed by chance_per_defeated for every
 # opponent defeated in the run, capped by max_chance, and only while the defeated
 # count is within min_defeated..max_defeated (bosses count defeated bosses).
 #
 # Custom Bosses: every folder in res://custom_bosses/ with a boss.cfg can replace
 # the dragon, the end boss of a run. They use the dragon's fight (attacks, special
-# hearts, 3 rounds, game over) with their own name, body and media. The dragon
-# always takes the body of the highest body preference slider, so a custom boss
-# gets weight chance / 100 * slider(its body) / highest slider against the
-# dragon's 1: with chance=100 and its body the favourite one, 50/50.
+# hearts, 3 rounds, game over) with their own name, body and media. A custom boss
+# gets weight chance / 100 (0 when the slider for its body is at 0) against the
+# dragon's 1: with chance=100 (the default) each of N custom bosses and the
+# dragon are equally likely, 1 / (1 + N).
 
 const LAYS_DIR = "res://custom_lays"
 const CONFIG_NAME = "lay.cfg"
@@ -53,9 +53,24 @@ var pendingboss = null
 
 
 func _ready() -> void :
+	reloadAll()
+
+
+# Also called by the Mod Kit app after it prepared a Lay for its preview.
+func reloadAll():
 	lays = loadAll(LAYS_DIR, CONFIG_NAME, "lay")
 	bosses = loadAll(BOSSES_DIR, BOSS_CONFIG_NAME, "boss")
+	pendingboss = null
 	print("[CustomLays] Loaded " + str(lays.size()) + " custom Lay(s) and " + str(bosses.size()) + " custom boss(es).")
+
+
+# Pictures are imported when the game is packed. The Mod Kit app shows pictures it
+# has just copied, which aren't imported yet, so those are read from the file.
+func loadTexture(path):
+	if ResourceLoader.exists(path):
+		return load(path)
+	var image = Image.load_from_file(path)
+	return null if image == null else ImageTexture.create_from_image(image)
 
 
 func loadAll(basedir, configname, section):
@@ -227,7 +242,7 @@ func loadMedia(basedir, folder, config):
 				variants.append(dir + str(file))
 			clips.append({"type": str(clip["type"]), "variants": variants})
 		if clips.size() > 0:
-			result[kind] = {"reset": getBool(config, kind + "_anim_reset_on_pause"), "clips": clips}
+			result[kind] = {"reset": getBool(config, kind + "_anim_reset_on_pause"), "fit": getBool(config, "auto_fit_" + kind + "_anim_length"), "clips": clips}
 	return result
 
 
@@ -271,12 +286,33 @@ func isMuted(kind):
 # Called from the patched LayChoosingUi.populate() after it set the species portrait.
 func applyPortrait(color, eye, lines, cutieinfo):
 	lines.stretch_mode = TextureRect.STRETCH_SCALE
+	# The profile is reused for the next Lay: drop a video portrait from before.
+	var old = lines.get_node_or_null("CustomPortraitVideo")
+	if old != null:
+		old.queue_free()
 	var lay = getLay(cutieinfo.get("custom", ""))
 	if lay.is_empty() || lay["portrait"] == "":
 		return
 	color.texture = null
 	eye.texture = null
-	lines.texture = load(lay["portrait"])
+	if String(lay["portrait"]).ends_with(".ogv"):
+		# A video or GIF portrait, already cut to a square when packing; looped.
+		lines.texture = null
+		var player = VideoStreamPlayer.new()
+		player.name = "CustomPortraitVideo"
+		var stream = VideoStreamTheora.new()
+		stream.file = lay["portrait"]
+		player.stream = stream
+		player.expand = true
+		player.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		player.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		lines.add_child(player)
+		player.finished.connect(func():
+			player.paused = false
+			player.play())
+		player.play()
+		return
+	lines.texture = loadTexture(lay["portrait"])
 	# Fills the square frame keeping the aspect ratio; the frame clips the edges.
 	lines.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 
@@ -371,14 +407,11 @@ func getBodyType(lay):
 # Weight of every custom Lay in species units (1 = one species with that body).
 func getWeights():
 	var sliders = Settings.getWeightDict()
-	var sum = 0.0
-	for body in sliders.keys():
-		sum += maxf(float(sliders[body]), 0)
 	var weights = []
 	for lay in lays:
 		var weight = 0.0
-		if sum > 0:
-			weight = getChance(lay) / 100.0 * maxf(float(sliders[getBodyType(lay)]), 0) / sum
+		if float(sliders[getBodyType(lay)]) > 0:
+			weight = getChance(lay) / 100.0
 		weights.append(weight)
 	return weights
 
@@ -498,21 +531,17 @@ func generate(lay, traitless):
 
 # ---- Custom bosses ----
 
-# Picks the end boss: the dragon (weight 1) or a custom boss. The dragon takes the
-# body of the highest slider, so a custom boss's body counts against that slider.
+# Picks the end boss: the dragon (weight 1) or a custom boss (chance / 100).
 # With disable_default_boss (mod_settings.cfg) the dragon's weight is 0; if then
 # every custom boss's weight is 0 too, the sliders are ignored (chance only, then
 # all equal), so there is always a boss.
 func pickBoss() -> Dictionary:
 	var sliders = Settings.getWeightDict()
-	var highest = 0.0
-	for body in sliders.keys():
-		highest = maxf(highest, float(sliders[body]))
 	var weights = []
 	for boss in bosses:
 		var weight = 0.0
-		if highest > 0:
-			weight = getChance(boss) / 100.0 * maxf(float(sliders[getBodyType(boss)]), 0) / highest
+		if float(sliders[getBodyType(boss)]) > 0:
+			weight = getChance(boss) / 100.0
 		weights.append(weight)
 	var dragon = 1.0
 	if bosses.size() > 0 && ModSettings.getBool("disable_default_boss"):
@@ -571,7 +600,7 @@ func showBossIntro(boss):
 		node.bus = "sfx"
 	else:
 		node = TextureRect.new()
-		node.texture = load(path)
+		node.texture = loadTexture(path)
 		node.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		node.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		native = node.texture.get_size()

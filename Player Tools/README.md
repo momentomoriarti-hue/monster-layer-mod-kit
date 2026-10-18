@@ -119,6 +119,7 @@ Everything else is refused, and in particular:
 - **`project.godot` and `override.cfg`** — they can turn on plugins and autoload scripts;
 - **programs, libraries and archives**: `.exe`, `.dll`, `.so`, `.zip`, `.pck`...;
 - **paths that leave the folder** (`..`, absolute paths, drives);
+- **files that aren't what their name says**: every video and picture must really be one (its first bytes are checked), so a program renamed to `.mp4` is refused;
 - **objects inside configs** (`Object(...)`, `Resource(...)`): Godot's config format can describe objects with scripts, a mod's config needs only text, numbers, true/false and lists.
 
 ## play-in-sandbox.bat — play inside Windows Sandbox
@@ -325,6 +326,7 @@ Use exactly these versions. (Inside the Monster Layer Mod Kit the scripts also f
 - **`project.godot` и `override.cfg`** — они могут включать плагины и автозагружаемые скрипты;
 - **программы, библиотеки и архивы**: `.exe`, `.dll`, `.so`, `.zip`, `.pck`...;
 - **пути, выходящие из папки** (`..`, абсолютные пути, диски);
+- **файлы, которые не то, чем названы**: каждое видео и картинка должны быть настоящими (проверяются их первые байты), так что программа, переименованная в `.mp4`, не пройдёт;
 - **объекты в конфигах** (`Object(...)`, `Resource(...)`): формат конфигов Godot умеет описывать объекты со скриптами, а конфигу мода нужны только текст, числа, true/false и списки.
 
 ## play-in-sandbox.bat — игра внутри Windows Sandbox

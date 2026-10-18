@@ -62,10 +62,11 @@ $videoExts = @('.mp4', '.m4v', '.webm', '.mov', '.mkv', '.avi', '.wmv', '.flv', 
 . (Join-Path $PSScriptRoot 'cfg.ps1')
 
 # Length in seconds of each game animation, used by auto_fit_<kind>_anim_length
-# (from Scene\Anim.gd and the species scenes). Strokes, idle, free cum and losing are
+# (from Scene\Anim.gd and the species scenes). Strokes, free cum and losing are
 # given at Pleasure 0; the orgasm always runs at full Pleasure (x1.5 speed): its
-# 4.5 s animation ends the round after 3.0 s. Hypno has no fixed length.
-$strokeLength = @{ 'thrust' = 1.0; 'pound' = 0.5; 'idle' = 2.0; 'free_cum' = 2.0; 'egg' = 2.0; 'lose' = 2.0; 'orgasm' = 3.0; 'intro' = 7.0 }
+# 4.5 s animation ends the round after 3.0 s. Hypno has no fixed length, and the
+# idle always plays at the video's own speed (only its speed modifier applies).
+$strokeLength = @{ 'thrust' = 1.0; 'pound' = 0.5; 'free_cum' = 2.0; 'egg' = 2.0; 'lose' = 2.0; 'orgasm' = 3.0; 'intro' = 7.0 }
 $settingsLines = [IO.File]::ReadAllLines($settings)
 $noAcceleration = (Get-CfgValue $settingsLines 'disable_anim_acceleration_with_pleasure' 'false').ToLower() -eq 'true'
 # Without the Pleasure speed-up (mod_settings.cfg) the orgasm runs at normal speed: 4.5 s.
@@ -73,7 +74,7 @@ if ($noAcceleration) { $strokeLength['orgasm'] = 4.5 }
 
 # anim_acceleration_steps (mod_settings.cfg): auto-fitted videos of these kinds get
 # that many copies, copy k at x(1 + 0.5 * k / steps), to follow the Pleasure speed-up.
-$steppedKinds = @('thrust', 'pound', 'idle', 'free_cum', 'egg', 'lose')
+$steppedKinds = @('thrust', 'pound', 'free_cum', 'egg', 'lose')
 $accelSteps = 1
 if (-not [int]::TryParse((Get-CfgValue $settingsLines 'anim_acceleration_steps' '1'), [ref]$accelSteps) -or $accelSteps -lt 1) {
     Write-Warning "mod_settings.cfg: anim_acceleration_steps must be a whole number of 1 or more, 1 is used."
@@ -140,6 +141,25 @@ function Convert-Video([string]$src, [double]$speed, [string]$dst) {
         }
         $tmp = "$cached.tmp.ogv"
         & $ffmpeg -hide_banner -loglevel error -y -i $src -map_metadata -1 -map 0:v:0 -vf $vfilter -pix_fmt yuv420p -c:v libtheora -q:v 7 -g 30 @audioArgs $tmp
+        if ($LASTEXITCODE -ne 0 -or -not (Test-Path $tmp)) { throw "FFmpeg could not convert $src" }
+        Move-Item $tmp $cached -Force
+    }
+    Copy-Item $cached $dst -Force
+}
+
+# A video or GIF portrait: the middle square of it, 400x400, without sound, looped
+# by the game. Cached like the other videos.
+function Convert-PortraitVideo([string]$src, [string]$dst) {
+    if (-not (Test-Path $ffmpeg)) { throw "FFmpeg not found: $ffmpeg" }
+    $hash = (Get-FileHash $src -Algorithm SHA256).Hash
+    $key = (Get-FileHash -InputStream ([IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes("$hash|portrait|fps$fpsLimit|v1"))) -Algorithm SHA256).Hash.Substring(0, 32)
+    $cached = Join-Path $cacheDir "$key.ogv"
+    if (-not (Test-Path $cached)) {
+        if (-not (Test-Path $cacheDir)) { New-Item -ItemType Directory $cacheDir | Out-Null }
+        Write-Host "    converting portrait $(Split-Path $src -Leaf)..."
+        $fps = [Math]::Min([Math]::Max((Get-VideoInfo $src)['fps'], 1), $fpsLimit).ToString('0.###', $inv)
+        $tmp = "$cached.tmp.ogv"
+        & $ffmpeg -hide_banner -loglevel error -y -i $src -map_metadata -1 -map 0:v:0 -vf "crop='min(iw,ih)':'min(iw,ih)',scale=400:400,fps=$fps" -pix_fmt yuv420p -c:v libtheora -q:v 7 -g 30 -an $tmp
         if ($LASTEXITCODE -ne 0 -or -not (Test-Path $tmp)) { throw "FFmpeg could not convert $src" }
         Move-Item $tmp $cached -Force
     }
@@ -234,8 +254,11 @@ function Prepare-Characters([string]$srcRoot, [string]$dstRoot, [string]$cfgName
             $ext = [IO.Path]::GetExtension($src).ToLower()
             if (-not (Test-Path $src -PathType Leaf)) {
                 Write-Warning "$($layDir.Name): portrait file '$portrait' not found, skipped."
+            } elseif ($videoExts -contains $ext) {
+                Convert-PortraitVideo $src (Join-Path $dst 'portrait.ogv')
+                [void]$media.Append("[portrait]`nfile=`"portrait.ogv`"`n`n")
             } elseif ($imageExts -notcontains $ext) {
-                Write-Warning "$($layDir.Name): portrait '$portrait' is not a supported picture, skipped."
+                Write-Warning "$($layDir.Name): portrait '$portrait' is not a supported picture, GIF or video, skipped."
             } else {
                 Copy-Item $src (Join-Path $dst "portrait$ext")
                 [void]$media.Append("[portrait]`nfile=`"portrait$ext`"`n`n")

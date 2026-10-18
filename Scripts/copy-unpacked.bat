@@ -34,9 +34,9 @@ if %errorlevel% geq 8 (
 
 echo.
 echo Done. Make your changes in "%BUILD%".
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 0
 
 :fail
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 1

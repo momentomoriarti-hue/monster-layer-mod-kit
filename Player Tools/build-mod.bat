@@ -26,7 +26,8 @@ exit /b %RESULT%
 #   build\mod_kit\*.gd                                       - the game code a mod adds
 # This script:
 #   1. reads the zip and refuses any file that isn't a config, video or picture in
-#      the expected place (so nothing in a mod source can run code);
+#      the expected place, or whose content isn't really a video or picture
+#      (build\source-zip.ps1), so nothing in a mod source can run code;
 #   2. unpacks your original game with GDRE Tools (kept in cache\);
 #   3. adds the mod with build\apply-mods.ps1 (FFmpeg converts the videos);
 #   4. packs the .pck with the official Godot 4.3, your own Monster Layer.exe being
@@ -71,6 +72,7 @@ function Get-Sha([string]$path) { return (Get-FileHash -LiteralPath $path -Algor
 function Clean-Path([string]$p) { return $p.Trim().Trim('"').Trim() }
 
 if (-not (Test-Path -LiteralPath $engine)) { Stop-Build "The build folder is missing next to build-mod.bat ($engine). Download the whole Player Tools folder, see README.md." }
+. (Join-Path $here 'build\source-zip.ps1')
 
 # Finds a tool next to this file (or in the Mod Kit), or downloads its official,
 # pinned release after asking, and checks its SHA-256 before unpacking it.
@@ -157,38 +159,10 @@ if (-not $knownGame.ContainsKey((Get-Sha $exe.FullName))) { Write-Host "[WARNING
 $work = Join-Path ([IO.Path]::GetTempPath()) ('mlmk-build-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
 $src = Join-Path $work 'source'
 $proj = Join-Path $work 'project'
-$problems = New-Object Collections.Generic.List[string]
-$mediaExts = @('.mp4', '.m4v', '.webm', '.mov', '.mkv', '.avi', '.wmv', '.flv', '.mpg', '.mpeg', '.gif', '.ogv', '.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tga')
 try {
     Write-Host "Reading $zipPath"
-    New-Item -ItemType Directory $src -Force | Out-Null
-    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
-    $archive = [IO.Compression.ZipFile]::OpenRead($zipPath)
-    try {
-        foreach ($e in $archive.Entries) {
-            $name = $e.FullName.Replace('\', '/')
-            if ($name.EndsWith('/')) { continue }
-            $parts = $name -split '/'
-            $ext = [IO.Path]::GetExtension($name).ToLower()
-            # No absolute paths, drives or ".." (a zip could write files anywhere).
-            if ($name -match '^(/|[A-Za-z]:)' -or $parts -contains '..' -or $parts -contains '.') { $problems.Add("Unsafe path: $name"); continue }
-            $ok = $name -eq 'mod_source.json' -or $name -eq 'mod_settings.cfg'
-            if (-not $ok -and $parts.Count -ge 3 -and ($parts[0] -eq 'Custom Lays' -or $parts[0] -eq 'Custom Bosses')) {
-                $cfgName = if ($parts[0] -eq 'Custom Lays') { 'lay.cfg' } else { 'boss.cfg' }
-                $ok = ($parts.Count -eq 3 -and $parts[2] -eq $cfgName) -or $mediaExts -contains $ext
-            }
-            if (-not $ok) { $problems.Add("Not a config, video or picture of a Lay or boss: $name"); continue }
-            $dst = Join-Path $src ($name.Replace('/', '\'))
-            New-Item -ItemType Directory (Split-Path $dst) -Force | Out-Null
-            [IO.Compression.ZipFileExtensions]::ExtractToFile($e, $dst, $true)
-        }
-    } finally { $archive.Dispose() }
-    # Configs are read by Godot's ConfigFile, whose format can also describe objects;
-    # a mod's config only holds text, numbers, true/false and lists.
-    foreach ($f in Get-ChildItem -LiteralPath $src -Recurse -File -Filter '*.cfg') {
-        $hit = Select-String -LiteralPath $f.FullName -Pattern '\b(Object|\w*Resource)\s*\(' | Select-Object -First 1
-        if ($hit) { $problems.Add("Object inside a config: $($f.FullName.Substring($src.Length + 1)) line $($hit.LineNumber)") }
-    }
+    # Only configs, videos and pictures are unpacked (build\source-zip.ps1).
+    $problems = Expand-ModSource $zipPath $src
     if ($problems.Count -gt 0) {
         Write-Host ''
         foreach ($p in $problems) { Write-Host "  $p" -ForegroundColor Red }

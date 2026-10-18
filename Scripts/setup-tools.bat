@@ -3,7 +3,7 @@ setlocal
 chcp 65001 >nul
 
 rem Sets up the mod kit from scratch. Downloads the tools the other scripts
-rem need into the Tools folder and creates the Custom Lays and Custom Bosses folders:
+rem need into the Tools folder and creates the Mods folder with an example mod:
 rem   Tools\GDRE_tools - Godot RE Tools (unpacks the original .pck into a project)
 rem   Tools\Godot      - Godot 4.3 editor (packs the modded project back into .pck)
 rem   Tools\FFmpeg     - FFmpeg (converts Custom Lay and Boss videos/GIFs to Ogg Theora for Godot)
@@ -61,29 +61,37 @@ if exist "%FFMPEG_DIR%\ffmpeg.exe" (
 rem "._sc_" makes Godot self-contained: its settings stay in Tools\Godot instead of AppData.
 if not exist "%GODOT_DIR%\._sc_" type nul > "%GODOT_DIR%\._sc_"
 
-rem Settings for the whole mod (Pleasure speed-up and others).
-if not exist "%ROOT%\mod_settings.cfg" (
-    copy "%~dp0templates\mod_settings.cfg" "%ROOT%\mod_settings.cfg" >nul
-    echo [OK] Created mod_settings.cfg.
+rem Mods: one folder per mod. Mods made before the Mods folder existed (Custom Lays,
+rem Custom Bosses and mod_settings.cfg in the kit folder) are moved into Mods\My Mod.
+set "MODS=%ROOT%\Mods"
+if not exist "%MODS%" mkdir "%MODS%"
+set "OLD_MOD="
+if exist "%ROOT%\Custom Lays" set "OLD_MOD=1"
+if exist "%ROOT%\Custom Bosses" set "OLD_MOD=1"
+if exist "%ROOT%\mod_settings.cfg" set "OLD_MOD=1"
+if defined OLD_MOD if not exist "%MODS%\My Mod" (
+    mkdir "%MODS%\My Mod"
+    copy "%~dp0templates\mod.cfg" "%MODS%\My Mod\mod.cfg" >nul
+    if exist "%ROOT%\Custom Lays" move "%ROOT%\Custom Lays" "%MODS%\My Mod\Custom Lays" >nul
+    if exist "%ROOT%\Custom Bosses" move "%ROOT%\Custom Bosses" "%MODS%\My Mod\Custom Bosses" >nul
+    if exist "%ROOT%\mod_settings.cfg" move "%ROOT%\mod_settings.cfg" "%MODS%\My Mod\mod_settings.cfg" >nul
+    echo [OK] Moved your Custom Lays, Custom Bosses and mod_settings.cfg into Mods\My Mod.
 )
 
-rem Custom Lays folder with an example Lay (switched off with active=false).
-if not exist "%ROOT%\Custom Lays" mkdir "%ROOT%\Custom Lays"
-if not exist "%ROOT%\Custom Lays\Simplified_Anims_Custom_Lay_Example" (
-    robocopy "%~dp0templates\Simplified_Anims_Custom_Lay_Example" "%ROOT%\Custom Lays\Simplified_Anims_Custom_Lay_Example" /E /NFL /NDL /NJH /NJS /NP >nul
-    echo [OK] Created Custom Lays\Simplified_Anims_Custom_Lay_Example.
-)
-
-rem Custom Bosses folder with an example boss (switched off with active=false).
-if not exist "%ROOT%\Custom Bosses" mkdir "%ROOT%\Custom Bosses"
-if not exist "%ROOT%\Custom Bosses\Simplified_Anims_Custom_Boss_Example" (
-    robocopy "%~dp0templates\Simplified_Anims_Custom_Boss_Example" "%ROOT%\Custom Bosses\Simplified_Anims_Custom_Boss_Example" /E /NFL /NDL /NJH /NJS /NP >nul
-    echo [OK] Created Custom Bosses\Simplified_Anims_Custom_Boss_Example.
+rem An example mod with an example Lay and boss, both switched off (active=false).
+set "EXAMPLE=%MODS%\Example Mod"
+if not exist "%EXAMPLE%" (
+    mkdir "%EXAMPLE%"
+    copy "%~dp0templates\mod.cfg" "%EXAMPLE%\mod.cfg" >nul
+    copy "%~dp0templates\mod_settings.cfg" "%EXAMPLE%\mod_settings.cfg" >nul
+    robocopy "%~dp0templates\Simplified_Anims_Custom_Lay_Example" "%EXAMPLE%\Custom Lays\Simplified_Anims_Custom_Lay_Example" /E /NFL /NDL /NJH /NJS /NP >nul
+    robocopy "%~dp0templates\Simplified_Anims_Custom_Boss_Example" "%EXAMPLE%\Custom Bosses\Simplified_Anims_Custom_Boss_Example" /E /NFL /NDL /NJH /NJS /NP >nul
+    echo [OK] Created Mods\Example Mod.
 )
 
 echo.
 echo All tools are ready.
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 0
 
 :download
@@ -113,10 +121,10 @@ if errorlevel 2 (
     echo [ERROR] The downloaded file is not the expected one ^(it may be damaged or tampered with^).
     echo         It was deleted and nothing was installed. Try again later; if it keeps happening,
     echo         do not install it by hand - report it on the mod kit's GitHub page.
-    pause
+    if not defined MLMK_NOPAUSE pause
     exit /b 1
 )
 echo.
 echo [ERROR] Download failed. Check your internet connection and try again.
-pause
+if not defined MLMK_NOPAUSE pause
 exit /b 1

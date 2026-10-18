@@ -12,14 +12,14 @@
 #   Custom Bosses\<name>\...
 
 param(
-    [Parameter(Mandatory = $true)][string]$Root,
+    [Parameter(Mandatory = $true)][string]$ModDir,
     [Parameter(Mandatory = $true)][string]$OriginalPck,
     [Parameter(Mandatory = $true)][string]$OutZip
 )
 
 $ErrorActionPreference = 'Stop'
 $utf8 = New-Object System.Text.UTF8Encoding($false)
-. (Join-Path $Root 'Player Tools\build\cfg.ps1')
+. (Join-Path $PSScriptRoot '..\Player Tools\build\cfg.ps1')
 
 # Files of one Lay or boss: its config and every file its fields point to.
 function Get-CharacterFiles([IO.DirectoryInfo]$dir, [string]$cfgName, [string[]]$kinds) {
@@ -53,7 +53,7 @@ try {
         [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file, $entry.Replace('\', '/'), [IO.Compression.CompressionLevel]::Optimal)
     }
     foreach ($set in @(@('Custom Lays', 'lay.cfg', $mediaKinds), @('Custom Bosses', 'boss.cfg', ($mediaKinds + 'intro')))) {
-        $base = Join-Path $Root $set[0]
+        $base = Join-Path $ModDir $set[0]
         if (-not (Test-Path -LiteralPath $base)) { continue }
         foreach ($dir in Get-ChildItem -LiteralPath $base -Directory) {
             if (-not (Test-Path -LiteralPath (Join-Path $dir.FullName $set[1]))) { continue }
@@ -64,7 +64,7 @@ try {
             $counts[$set[0]]++
         }
     }
-    $settings = Join-Path $Root 'mod_settings.cfg'
+    $settings = Join-Path $ModDir 'mod_settings.cfg'
     if (Test-Path -LiteralPath $settings) { Add-Entry $settings 'mod_settings.cfg'; $fileCount++ }
     $manifest = [ordered]@{
         format = 2

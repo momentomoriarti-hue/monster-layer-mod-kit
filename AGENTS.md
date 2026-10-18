@@ -12,20 +12,25 @@ into an editable project and pack a modded build back:
 
 1. `Scripts/setup-tools.bat` downloads GDRE Tools, Godot 4.3 and FFmpeg into
    `Tools/` (pinned GitHub release URLs, each archive checked against a pinned
-   SHA-256 before it is unpacked). It also creates `Custom Lays/`,
-   `Custom Bosses/` and `mod_settings.cfg` from `Scripts/templates/`.
+   SHA-256 before it is unpacked). It also creates `Mods/Example Mod/` from
+   `Scripts/templates/`. Every mod is a folder `Mods/<name>/` with `mod.cfg`
+   (kit-side: name, `pack_as`), `mod_settings.cfg`, `Custom Lays/` and
+   `Custom Bosses/`; scripts that work on one mod take its folder name
+   (`Scripts/_pick_mod.bat`).
 2. `Scripts/unpack-original.bat` unpacks the user's own game
    (`Original Packed/*.pck`) into `Original Unpacked/` with GDRE Tools.
 3. `Scripts/copy-unpacked.bat` copies it into `Moded Unpacked/build_<time>/`,
    where mods are made.
-4. `Scripts/pack-moded.bat` runs `Player Tools/build/apply-mods.ps1` (copies
+4. `Scripts/pack-moded.bat "<mod>"` runs `Player Tools/build/apply-mods.ps1` (copies
    `Player Tools/build/mod_kit/*`, `mod_settings.cfg`, Custom Lays and Bosses
    into the build, converts their videos with FFmpeg, hooks the game via
    `Player Tools/build/hook-game.ps1`; config helpers in `cfg.ps1`). The same
    engine is used by the players' `build-mod.bat`. It exports the build with
    the bundled Godot (the original game `.exe` is the export template) and
    `Scripts/make-release.bat` puts only the `.pck`, its SHA-256 and install
-   notes into `Moded Packed/Release/`.
+   notes into `Moded Packed/Release/`. `Moded Packed/override.cfg` gives the
+   test game a separate save folder (`%APPDATA%/MonsterLayer Mod Test`); it
+   is never in `Release/`.
 5. `Scripts/pack-moded-source.bat` (+ `pack-source.ps1`) packs a mod as a
    source zip in `Moded Source/` instead (format 2): only `mod_settings.cfg`,
    the `lay.cfg` / `boss.cfg` of every active Custom Lay and Boss and the
@@ -39,13 +44,35 @@ into an editable project and pack a modded build back:
      own game (GDRE Tools + FFmpeg + Godot 4.3, `build/apply-mods.ps1`, the
      player's `.exe` as export template). It whitelists zip entries (only
      `mod_source.json`, `mod_settings.cfg`, `Custom Lays/<n>/lay.cfg`,
-     `Custom Bosses/<n>/boss.cfg` and media extensions in those folders; no
-     `..`/absolute paths; no `Object(`/`Resource(` in configs) and refuses the
-     whole zip otherwise;
+     `Custom Bosses/<n>/boss.cfg` and media extensions in those folders, each
+     media file's first bytes matching its type; no `..`/absolute paths; no
+     `Object(`/`Resource(` in configs) and refuses the whole zip otherwise.
+     These checks live in `Player Tools/build/source-zip.ps1`, shared with the
+     app's import;
    - `play-in-sandbox.bat` writes a Windows Sandbox `.wsb` (network off, game
      folder and mod read-only, saves in `sandbox/saves`) and starts it.
-   `Scripts/check-mod.bat` and `Scripts/play-moded-in-sandbox.bat` run them for
-   the kit's own build.
+   Inside the kit they find its `Tools/`; the app's import runs `check-mod.bat`.
+
+7. The Mod Kit app (`Monster Layer Mod Kit.bat`): a Godot project in
+   `Mod Kit App/app` (GDScript, no binaries) run with the official Godot 4.3
+   from `Tools/Godot`. `Mod Kit App/prepare-workspace.ps1` copies
+   `Original Unpacked` to `Tools/app_workspace`, adds the kit's game code with
+   `apply-mods.ps1`, copies the app to `res://mlmk_app` and writes an
+   `override.cfg` (main scene = the app, own user dir
+   `%APPDATA%/MonsterLayer Mod Kit App`). The app edits configs in `Mods/`
+   (comments kept, `cfg_doc.gd`), builds its forms from the field comments in
+   `Scripts/templates` (`schema.gd`), previews a Lay in the game's real scenes
+   after running `apply-mods.ps1` on the workspace (`preview.gd`), and packs
+   by running `Scripts/*.bat` through PowerShell (`task_dialog.gd`). It is a
+   kit tool, not mod code: `OS.execute` / `execute_with_pipe` /
+   `create_process` appear only there (PowerShell, the kit's scripts, the
+   game `.exe` in `Moded Packed`), never in `Player Tools/build/mod_kit/`.
+   "Load mod from file" runs `Mod Kit App/import-mod.ps1`: Windows Defender
+   (`MpCmdRun.exe -Scan -ScanType 3`), then for a zip `source-zip.ps1`, for a
+   `.pck` `check-mod.bat` (exit 3 refuses, 2 needs `-Accept yes`) and GDRE
+   `--recover` limited by `--include` to `custom_lays`, `custom_bosses`,
+   `mod_kit/mod_settings.cfg` and their imported pictures; nothing else from
+   the `.pck` is kept and nothing of it is run.
 
 No script ever downloads the game: the user always provides their own copy.
 
@@ -95,9 +122,10 @@ in git. Check, in this order:
    `Tools/FFmpeg/ffmpeg.exe`, or the same under `Player Tools/tools/`) plus
    Windows built-ins (cmd, PowerShell, robocopy) and `WindowsSandbox.exe`. Search for anything else: `Start-Process`, `&` calls, `cmd /c`,
    `Invoke-Expression`, `iex`, `DownloadString`, `curl`, `bitsadmin`, `certutil`.
-3. **Files touched:** the scripts write only inside the kit folder (`Tools/`,
-   `Original Unpacked/`, `Moded Unpacked/`, `Moded Packed/`, `Custom *`,
-   `mod_settings.cfg`, `Moded Source/`, `Player Tools/` subfolders), next to a
+3. **Files touched:** the scripts and the app write only inside the kit folder
+   (`Tools/`, `Original Unpacked/`, `Moded Unpacked/`, `Moded Packed/`,
+   `Mods/`, `Moded Source/`, `Player Tools/` subfolders), the app's and the
+   test game's own user folders in `%APPDATA%`, next to a
    checked or built mod (`.check.txt`, `<zip> - built/`) and the Windows temp
    folder (download archives, work folders). They delete folders only there (`rd /s /q`, `Remove-Item`):
    verify every delete target is built from the kit's own paths.

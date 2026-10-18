@@ -9,6 +9,12 @@ var config = ConfigFile.new()
 
 
 func _ready() -> void :
+	reload()
+
+
+# Also called by the Mod Kit app after it prepared a mod for its preview.
+func reload():
+	config = ConfigFile.new()
 	# Parsed from text with the UTF-8 BOM removed, since some editors (Notepad) add one.
 	var text = FileAccess.get_file_as_string(PATH).trim_prefix(char(0xFEFF))
 	if text == "" || config.parse(text) != OK:

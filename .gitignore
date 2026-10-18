@@ -16,10 +16,14 @@
 # Downloaded by setup-tools.bat (or by hand, see README), plus the video cache.
 /Tools/
 
-# Your own custom Lays and bosses. The examples in them are copied by
-# setup-tools.bat from Scripts/templates/, which is the copy kept in git.
+# Your mods (Mods/<name>/: mod.cfg, mod_settings.cfg, Custom Lays, Custom Bosses).
+# The example mod is made by setup-tools.bat from Scripts/templates/, which is the
+# copy kept in git. Custom Lays/Bosses in the kit folder are from older versions.
+/Mods/
 /Custom Lays/
 /Custom Bosses/
+
+# The Mod Kit app's working copy of the game (made from Original Unpacked).
 
 # The f95zone post drafts.
 /f95zone-post.txt
